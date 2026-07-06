@@ -72,10 +72,23 @@
 class Component extends DCLogic {
   state = { email: '', pw: '', error: '', done: false };
 
+  redirectTarget() {
+    try {
+      const r = new URLSearchParams(location.search).get('redirect');
+      if (r && /^[a-z0-9_.-]+\.html/i.test(r)) return r;
+    } catch (e) {}
+    return 'index.html';
+  }
+
   submit() {
     if (!this.state.email.trim() || !this.state.pw.trim()) { this.setState({ error: '이메일과 비밀번호를 입력해주세요.' }); return; }
     if (!/.+@.+\..+/.test(this.state.email)) { this.setState({ error: '올바른 이메일 형식이 아닙니다.' }); return; }
+    try {
+      localStorage.setItem('ms_user', JSON.stringify({ email: this.state.email, name: this.state.email.split('@')[0], at: Date.now() }));
+    } catch (e) {}
     this.setState({ done: true, error: '' });
+    const t = this.redirectTarget();
+    setTimeout(() => { location.href = t; }, 900);
   }
 
   renderVals() {

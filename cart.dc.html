@@ -157,7 +157,18 @@ class Component extends DCLogic {
 
   openCheckout() {
     if (this.state.items.length === 0) return;
-    this.setState({ checkoutOpen: true, payMsg: '', paying: false });
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('ms_user') || 'null'); } catch (e) {}
+    if (!user) {
+      alert('결제를 진행하려면 먼저 로그인이 필요합니다.');
+      location.href = 'login.dc.html?redirect=cart.dc.html';
+      return;
+    }
+    this.setState({
+      checkoutOpen: true, payMsg: '', paying: false,
+      ordNm: this.state.ordNm || user.name || '',
+      email: this.state.email || user.email || '',
+    });
   }
   closeCheckout() {
     if (this.state.paying) return;
