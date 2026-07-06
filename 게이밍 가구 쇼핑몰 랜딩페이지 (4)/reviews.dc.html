@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#ffffff; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  ::selection { background:#dbe4ff; }
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; }
+</style>
+</helmet>
+
+<div id="top" style="min-height:100vh;">
+
+  <!-- NAV -->
+  <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
+    <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
+      <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
+        <div style="position:relative;" onMouseEnter="{{ openMenu }}" onMouseLeave="{{ closeMenu }}">
+          <a href="index.html#category" style-hover="{{ linkHover }}">카테고리 ▾</a>
+          <sc-if value="{{ catMenu }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:100%;left:-20px;padding-top:14px;z-index:60;">
+              <div style="background:#fff;border:1px solid #eceef1;border-radius:14px;box-shadow:0 24px 54px -20px rgba(0,0,0,.28);padding:16px;width:460px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+                  <sc-for list="{{ menuCats }}" as="c" hint-placeholder-count="8">
+                    <a href="{{ c.href }}" style="display:block;padding:11px 14px;border-radius:9px;font-size:14.5px;font-weight:600;color:#33353a;" style-hover="{{ menuItemHover }}">{{ c.name }}</a>
+                  </sc-for>
+                </div>
+                <a href="category.dc.html?cat=all" style="display:block;text-align:center;margin-top:8px;padding-top:12px;border-top:1px solid #f0f1f4;font-size:13.5px;font-weight:700;color:#3a56c5;">전체 제품 보기 →</a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        <a href="index.html#products" style-hover="{{ linkHover }}">인기제품</a>
+        <a href="reviews.dc.html" style="color:#3a56c5;">후기</a>
+        <a href="support.dc.html?page=contact" style-hover="{{ linkHover }}">문의</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HEADER -->
+  <section style="max-width:1180px;margin:0 auto;padding:44px 28px 10px;">
+    <div style="font-size:13px;color:#9a9aa0;margin-bottom:14px;">
+      <a href="index.html" style-hover="{{ linkHover }}">홈</a> <span style="margin:0 6px;">›</span> <span style="color:#55555c;">고객후기</span>
+    </div>
+    <h1 style="font-weight:800;font-size:clamp(28px,4vw,42px);letter-spacing:-.02em;">고객후기</h1>
+    <div style="display:flex;align-items:center;gap:20px;margin-top:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <span style="font-size:40px;font-weight:800;letter-spacing:-.02em;">{{ avg }}</span>
+        <span style="font-size:16px;color:#9a9aa0;">/ 5.0</span>
+      </div>
+      <div>
+        <div style="color:#f4a51c;font-size:18px;letter-spacing:2px;">★★★★★</div>
+        <div style="font-size:13.5px;color:#7c7c82;margin-top:4px;">총 {{ total }}개의 후기</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTER -->
+  <section style="max-width:1180px;margin:0 auto;padding:20px 28px 0;">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+        <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- REVIEWS LIST -->
+  <section style="max-width:1180px;margin:0 auto;padding:26px 28px 70px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;">
+      <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="9">
+        <div style="border:1px solid #ececef;border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="color:#f4a51c;font-size:15px;letter-spacing:2px;">{{ r.stars }}</div>
+            <div style="font-size:12.5px;color:#a9adb6;">{{ r.date }}</div>
+          </div>
+          <p style="font-size:15px;line-height:1.75;color:#2f2f34;flex:1;">{{ r.text }}</p>
+          <a href="{{ r.href }}" style="font-size:12.5px;font-weight:600;color:#3a56c5;background:#eef1f8;padding:7px 12px;border-radius:8px;align-self:flex-start;" style-hover="{{ chipHover }}">{{ r.product }} →</a>
+          <div style="display:flex;align-items:center;gap:12px;border-top:1px solid #f2f2f4;padding-top:14px;">
+            <span style="width:38px;height:38px;border-radius:50%;background:#eef1f8;color:#3a56c5;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;">{{ r.initial }}</span>
+            <div>
+              <div style="font-weight:600;font-size:14px;">{{ r.name }}</div>
+              <div style="font-size:12px;color:#9a9aa0;">{{ r.role }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ hasMore }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:36px;">
+        <button onClick="{{ loadMore }}" style="background:#fff;color:#1c1c1e;font-weight:700;font-size:15px;padding:14px 40px;border:1px solid #1c1c1e;border-radius:10px;cursor:pointer;" style-hover="{{ chipHover }}">후기 더보기 (+{{ remaining }})</button>
+        <div style="font-size:13px;color:#9a9aa0;">{{ shownCount }} / {{ filteredCount }}개 표시 중</div>
+      </div>
+    </sc-if>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background:#2a2a2d;color:#a2a2a8;">
+    <div style="max-width:1280px;margin:0 auto;padding:34px 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;">
+      <div style="font-weight:800;font-size:20px;letter-spacing:.12em;color:#fff;">MORESEAT</div>
+      <div style="font-size:12.5px;color:#8a8a90;">대한매니지먼트(주) · 사업자등록번호 129-86-45068</div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { shop: null, filter: 0, catMenu: false, visible: 9 };
+
+  linkHover = { color: '#3a56c5' };
+  chipHover = { background: '#dbe4ff' };
+  menuItemHover = { background: '#f4f6fb', color: '#3a56c5' };
+
+  componentDidMount() {
+    import('./shop-data.js').then(m => { this.setState({ shop: (m && (m.SHOP || m.default)) || window.SHOP }); })
+      .catch(() => { if (window.SHOP) this.setState({ shop: window.SHOP }); });
+  }
+
+  stars(r) { return '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r); }
+
+  renderVals() {
+    const shop = this.state.shop || { reviews: [] };
+    const all = shop.reviews;
+    const avg = all.length ? (all.reduce((a, r) => a + r.rating, 0) / all.length).toFixed(1) : '0.0';
+
+    const filterDefs = [
+      { label: '전체', min: 0 }, { label: '★5', min: 5 }, { label: '★4 이상', min: 4 }, { label: '★3 이상', min: 3 },
+    ];
+    const filters = filterDefs.map((f, i) => {
+      const active = this.state.filter === i;
+      return {
+        label: f.label, onClick: () => this.setState({ filter: i, visible: 9 }),
+        style: {
+          display: 'inline-block', padding: '9px 18px', borderRadius: '999px', fontSize: '14px', fontWeight: 600,
+          border: '1px solid ' + (active ? '#1c1c1e' : '#dcdce0'), cursor: 'pointer',
+          background: active ? '#1c1c1e' : '#fff', color: active ? '#fff' : '#55555c',
+        },
+      };
+    });
+
+    const min = filterDefs[this.state.filter].min;
+    const filtered = all.filter(r => this.state.filter === 1 ? r.rating === 5 : r.rating >= min)
+      .map(r => ({ ...r, stars: this.stars(r.rating), href: 'product.dc.html?id=' + r.productId }));
+    const reviews = filtered.slice(0, this.state.visible);
+    const hasMore = filtered.length > this.state.visible;
+    const remaining = Math.max(0, filtered.length - this.state.visible);
+
+    return {
+      linkHover: this.linkHover, chipHover: this.chipHover,
+      avg, total: all.length, filters, reviews,
+      shownCount: reviews.length, filteredCount: filtered.length,
+      hasMore, remaining, loadMore: () => this.setState(s => ({ visible: s.visible + 9 })),
+      catMenu: this.state.catMenu, menuItemHover: this.menuItemHover,
+      menuCats: (shop.categories || []).map(c => ({ name: c.name, count: (shop.products || []).filter(p => p.catSlug === c.slug).length, href: 'category.dc.html?cat=' + c.slug })),
+      openMenu: () => this.setState({ catMenu: true }),
+      closeMenu: () => this.setState({ catMenu: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>

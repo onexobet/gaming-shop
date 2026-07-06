@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뱅크페이 결제 결과</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+        
+        .header.failed {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        .header.login {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+        
+        .status-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .status-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .status-message {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 25px 20px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .result-value {
+            color: #333;
+            font-size: 14px;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-all;
+        }
+        
+        .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .buttons {
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-details {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .error-code {
+            font-family: monospace;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        .retry-info {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 로딩 상태 -->
+        <div id="loadingSection" class="loading">
+            <div class="spinner"></div>
+            <p id="loadingMessage">결제 결과를 확인중입니다...</p>
+        </div>
+        
+        
+        
+        <!-- 결제 성공 -->
+        <div id="successSection" style="display: none;">
+            <div class="header success">
+                <div class="status-icon">✅</div>
+                <div class="status-title">결제 완료</div>
+                <div class="status-message">결제가 성공적으로 완료되었습니다</div>
+            </div>
+            
+            <div class="content">
+                <div class="result-item">
+                    <span class="result-label">주문번호</span>
+                    <span class="result-value" id="successTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">결제금액</span>
+                    <span class="result-value amount" id="successAmount">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">상품명</span>
+                    <span class="result-value" id="successGoodsName">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">주문자</span>
+                    <span class="result-value" id="successOrdNm">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">결제일시</span>
+                    <span class="result-value" id="successAppDtm">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">윈글로벌페이 거래 키</span>
+                    <span class="result-value" id="successWTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">결제수단</span>
+                    <span class="result-value" id="successVan">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">발행사</span>
+                    <span class="result-value" id="successIssuer">-</span>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="goHome()">홈으로 돌아가기</button>
+                
+            </div>
+        </div>
+        
+        <!-- 결제 실패 -->
+        <div id="failedSection" style="display: none;">
+            <div class="header failed">
+                <div class="status-icon">❌</div>
+                <div class="status-title">결제 실패</div>
+                <div class="status-message">결제 처리 중 오류가 발생했습니다</div>
+            </div>
+            
+            <div class="content">
+                <div class="result-item">
+                    <span class="result-label">주문번호</span>
+                    <span class="result-value" id="failedTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">실패 사유</span>
+                    <span class="result-value" id="failedMessage">-</span>
+                </div>
+                
+                <div class="error-details">
+                    <div class="error-code" id="errorDetails">오류 정보를 확인중입니다...</div>
+                </div>
+                
+                <div class="retry-info">
+                    <strong>안내:</strong> 결제 실패 시 자동으로 취소 처리됩니다. 
+                    카드 승인이 되었다면 곧 취소될 예정입니다.
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="retryPayment()">다시 결제하기</button>
+                <button class="btn btn-secondary" onclick="goHome()">홈으로 돌아가기</button>
+            </div>
+        </div>
+        
+        <!-- API 호출 실패 -->
+        <div id="errorSection" style="display: none;">
+            <div class="header failed">
+                <div class="status-icon">⚠️</div>
+                <div class="status-title">오류 발생</div>
+                <div class="status-message">결제 상태를 확인할 수 없습니다</div>
+            </div>
+            
+            <div class="content">
+                <div class="result-item">
+                    <span class="result-label">주문번호</span>
+                    <span class="result-value" id="errorTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">오류 내용</span>
+                    <span class="result-value" id="errorMessage">-</span>
+                </div>
+                
+                <div class="error-details">
+                    <div class="error-code" id="errorApiDetails">API 호출 오류가 발생했습니다.</div>
+                </div>
+                
+                <div class="retry-info">
+                    <strong>안내:</strong> 네트워크 오류이거나 일시적인 시스템 오류일 수 있습니다.
+                    잠시 후 다시 시도해주세요.
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="retryStatusCheck()">상태 다시 확인</button>
+                <button class="btn btn-secondary" onclick="goHome()">홈으로 돌아가기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentTid = null;
+        let paymentResult = null;
+        let jwtToken = '';
+        
+
+        const SERVER_URL = `https://jh.winglobalpay.com`;
+        
+        // 로그인 정보 
+        const sampleCredentials = {
+            tmnId: '.....'
+        };
+        
+        // PayKey 
+        const AUTH_KEY = '.....';
+        
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('뱅크페이 결제 결과 페이지 로드');
+            console.log('URL:', window.location.href);
+            console.log('Query params:', window.location.search);
+            
+            // URL에서 tid 추출
+            const urlParams = new URLSearchParams(window.location.search);
+            currentTid = urlParams.get('tid');
+            
+            // 기존 토큰 확인 (만료 체크 포함)
+            jwtToken = getValidJwtToken();
+            
+            if (currentTid) {
+                console.log('전달받은 TID:', currentTid);
+                
+                if (jwtToken) {
+                    console.log('JWT 토큰 있음 - API 호출');
+                    fetchPaymentStatus(currentTid);
+                } else {
+                    console.log('JWT 토큰 없음 - 자동 로그인 시도');
+                    performAutoLogin(currentTid);
+                }
+            } else {
+                console.log('TID가 URL에 없음, 기존 방식으로 파라미터 파싱 시도');
+                // 기존 방식으로 fallback
+                parsePaymentResultFromUrl();
+            }
+        });
+        
+        /**
+         * JWT 토큰 유효성 검사 (만료 체크)
+         */
+        function isTokenValid(token) {
+            if (!token) {
+                console.log('토큰이 없음');
+                return false;
+            }
+            
+            try {
+                // JWT 토큰 파싱 (간단한 만료 체크)
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const currentTime = Math.floor(Date.now() / 1000);
+                
+                console.log('토큰 만료 체크:');
+                console.log('- 현재 시간:', new Date(currentTime * 1000).toLocaleString());
+                console.log('- 토큰 만료:', payload.exp ? new Date(payload.exp * 1000).toLocaleString() : '만료시간 없음');
+                console.log('- 남은 시간:', payload.exp ? Math.max(0, payload.exp - currentTime) + '초' : 'N/A');
+                
+                if (payload.exp && payload.exp < currentTime) {
+                    console.log('토큰이 만료됨');
+                    return false;
+                }
+                
+                console.log('토큰이 유효함');
+                return true;
+            } catch (error) {
+                console.error('토큰 파싱 오류:', error);
+                return false;
+            }
+        }
+        
+        /**
+         * JWT 토큰 가져오기 및 유효성 검사
+         */
+        function getValidJwtToken() {
+            const localToken = localStorage.getItem('jwtToken');
+            const sessionToken = sessionStorage.getItem('jwtToken');
+            
+            console.log('토큰 디버깅:');
+            console.log('- localStorage 토큰:', localToken ? `${localToken.substring(0, 20)}...` : '없음');
+            console.log('- sessionStorage 토큰:', sessionToken ? `${sessionToken.substring(0, 20)}...` : '없음');
+            
+            // 토큰 우선순위: localStorage -> sessionStorage
+            const tokens = [localToken, sessionToken].filter(Boolean);
+            
+            for (const token of tokens) {
+                if (isTokenValid(token)) {
+                    console.log('- 사용할 토큰:', `${token.substring(0, 20)}...`);
+                    return token;
+                }
+            }
+            
+            console.log('- 유효한 토큰 없음');
+            // 만료된 토큰들 정리
+            if (localToken && !isTokenValid(localToken)) {
+                localStorage.removeItem('jwtToken');
+                console.log('- 만료된 localStorage 토큰 제거');
+            }
+            if (sessionToken && !isTokenValid(sessionToken)) {
+                sessionStorage.removeItem('jwtToken');
+                console.log('- 만료된 sessionStorage 토큰 제거');
+            }
+            
+            return '';
+        }
+        
+        /**
+         * 로딩 메시지 업데이트
+         */
+        function updateLoadingMessage(message) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.textContent = message;
+            }
+        }
+        
+        /**
+         * 자동 로그인 수행
+         */
+        function performAutoLogin(tid) {
+            console.log('자동 로그인 시작');
+            
+            // 로딩 메시지 업데이트
+            updateLoadingMessage('인증 중입니다...');
+            
+            fetch(`${SERVER_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AUTH_KEY}`
+                },
+                body: JSON.stringify(sampleCredentials)
+            })
+            .then(response => {
+                console.log('Login response status:', response.status);
+                
+                if (!response.ok) {
+                    return response.text().then(errorText => {
+                        console.error('Login error response:', errorText);
+                        throw new Error(`HTTP ${response.status}: ${errorText || '로그인 실패'}`);
+                    });
+                }
+                return response.text();
+            })
+            .then(responseText => {
+                console.log('Login response text:', responseText);
+                
+                // JSON 파싱 시도
+                try {
+                    const data = JSON.parse(responseText);
+                    if (data.token) {
+                        jwtToken = data.token;
+                        sessionStorage.setItem('jwtToken', jwtToken);
+                        localStorage.setItem('jwtToken', jwtToken);
+                        
+                        console.log('자동 로그인 성공, 결제 상태 조회 시작');
+                        
+                        // 로딩 메시지 업데이트
+                        updateLoadingMessage('결제 상태를 조회중입니다...');
+                        
+                        // 로그인 성공 후 결제 상태 조회
+                        if (tid) {
+                            fetchPaymentStatus(tid);
+                        } else {
+                            // TID가 없으면 기존 방식 사용
+                            parsePaymentResultFromUrl();
+                        }
+                    } else {
+                        throw new Error('토큰을 받지 못했습니다: ' + (data.message || ''));
+                    }
+                } catch (e) {
+                    console.error('JSON parsing error:', e);
+                    throw new Error('로그인 응답 파싱 오류: ' + responseText);
+                }
+            })
+            .catch(error => {
+                console.error('❌ 자동 로그인 실패:', error);
+                
+                // 로딩 숨기고 오류 표시
+                hideLoading();
+                displayErrorResult(tid || '알 수 없음', `자동 로그인 실패: ${error.message}`);
+            });
+        }
+        
+        /**
+         * PaymentCommonController의 /status/{tid} API 호출
+         */
+        function fetchPaymentStatus(tid) {
+            console.log(`결제 상태 조회 시작: ${tid}`);
+            
+            // JWT 토큰 가져오기 (유효성 검사 포함)
+            const validToken = getValidJwtToken();
+            
+            console.log('인증 정보:');
+            console.log('- 유효한 토큰 존재 여부:', !!validToken);
+            console.log('- 토큰 길이:', validToken ? validToken.length : 0);
+            
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // 유효한 JWT 토큰이 있으면 Authorization 헤더 추가
+            if (validToken) {
+                headers['Authorization'] = `Bearer ${validToken}`;
+                console.log('- Authorization 헤더 추가됨');
+            } else {
+                console.log('- 유효한 JWT 토큰이 없어서 Authorization 헤더 없이 요청');
+            }
+            
+            console.log('API 요청 정보:');
+            console.log('- URL:', `${SERVER_URL}/api/payment/status/${tid}`);
+            console.log('- Headers:', headers);
+            
+            fetch(`${SERVER_URL}/api/payment/status/${tid}`, {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('API 응답 상태:', response.status);
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.log('401 Unauthorized - 토큰 인증 실패 (만료 가능성)');
+                        // 토큰 정리 후 자동 로그인 시도
+                        clearExpiredTokens();
+                        throw new Error('TOKEN_EXPIRED');
+                    } else if (response.status === 403) {
+                        console.log('403 Forbidden - 접근 권한 없음');
+                        throw new Error('접근 권한이 없습니다. 관리자에게 문의하세요.');
+                    } else if (response.status === 404) {
+                        console.log('404 Not Found - 주문번호를 찾을 수 없음');
+                        throw new Error('해당 주문번호를 찾을 수 없습니다.');
+                    } else {
+                        console.log(`${response.status} 오류 발생`);
+                        throw new Error(`서버 오류가 발생했습니다. (${response.status})`);
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('결제 상태 조회 성공:', data);
+                
+                // 로딩 숨김
+                hideLoading();
+                
+                // 응답 데이터 저장
+                paymentResult = data;
+                
+                // 결제 결과에 따라 UI 표시
+                if (data.success === true) {
+                    displaySuccessResult(data);
+                } else {
+                    displayFailedResult(data);
+                }
+            })
+            .catch(error => {
+                console.error('❌ 결제 상태 조회 실패:', error);
+                
+                // 토큰 만료 오류인 경우 자동 재로그인 시도
+                if (error.message === 'TOKEN_EXPIRED') {
+                    console.log('토큰 만료로 인한 자동 재로그인 시도');
+                    updateLoadingMessage('토큰이 만료되어 재인증중입니다...');
+                    performAutoLogin(tid);
+                    return;
+                }
+                
+                // 로딩 숨김
+                hideLoading();
+                
+                // 오류 화면 표시
+                displayErrorResult(tid, error.message);
+            });
+        }
+        
+        /**
+         * 만료된 토큰들 정리
+         */
+        function clearExpiredTokens() {
+            localStorage.removeItem('jwtToken');
+            sessionStorage.removeItem('jwtToken');
+            jwtToken = '';
+            console.log('🗑만료된 토큰들 정리 완료');
+        }
+        
+        /**
+         * 기존 방식: URL 파라미터에서 결제 결과 파싱 (fallback)
+         */
+        function parsePaymentResultFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log('기존 방식으로 URL 파라미터 파싱');
+            
+            // 모든 파라미터 로깅
+            for (const [key, value] of urlParams.entries()) {
+                console.log(`  ${key}: ${value}`);
+            }
+            
+            // 기본 파라미터 추출
+            paymentResult = {
+                success: urlParams.get('success') === 'true',
+                tid: urlParams.get('tid') || '',
+                wTid: urlParams.get('wTid') || '',
+                amt: urlParams.get('amt') || '',
+                ordNm: urlParams.get('ordNm') || '',
+                goodsName: urlParams.get('goodsName') || '',
+                message: urlParams.get('message') || '',
+                appDtm: urlParams.get('appDtm') || '',
+                van: urlParams.get('van') || '',
+                cancelYn: urlParams.get('cancelYn') || '',
+                issuer: urlParams.get('issuer') || ''
+            };
+            
+            console.log('💳 파싱된 결제 결과:', paymentResult);
+            
+            // 로딩 숨김
+            hideLoading();
+            
+            // 결과에 따라 UI 표시
+            if (paymentResult.success) {
+                displaySuccessResult(paymentResult);
+            } else {
+                displayFailedResult(paymentResult);
+            }
+        }
+        
+        /**
+         * 로딩 화면 숨김
+         */
+        function hideLoading() {
+            document.getElementById('loadingSection').style.display = 'none';
+        }
+        
+        /**
+         * 결제 성공 결과 표시
+         */
+        function displaySuccessResult(data) {
+            console.log('결제 성공 화면 표시');
+            
+            // 데이터 바인딩
+            document.getElementById('successTid').textContent = data.tid || '정보 없음';
+            document.getElementById('successAmount').textContent = formatAmount(data.amt) + '원';
+            document.getElementById('successGoodsName').textContent = data.goodsName || '상품명 없음';
+            document.getElementById('successOrdNm').textContent = data.ordNm || '주문자 없음';
+            document.getElementById('successAppDtm').textContent = formatDateTime(data.appDtm);
+            document.getElementById('successWTid').textContent = data.wTid || '거래번호 없음';
+            document.getElementById('successVan').textContent = getVanName(data.van);
+            document.getElementById('successIssuer').textContent = getIssuerName(data.issuer);
+            
+            // 성공 섹션 표시
+            document.getElementById('successSection').style.display = 'block';
+        }
+        
+        /**
+         * 결제 실패 결과 표시
+         */
+        function displayFailedResult(data) {
+            console.log('결제 실패 화면 표시');
+            
+            // 데이터 바인딩
+            document.getElementById('failedTid').textContent = data.tid || '주문번호 없음';
+            document.getElementById('failedMessage').textContent = data.message || '알 수 없는 오류';
+            
+            // 오류 상세 정보
+            const errorDetails = `
+                TID: ${data.tid || 'N/A'}
+                VAN: ${data.van || 'N/A'}
+                발행사: ${data.issuer || 'N/A'}
+                취소여부: ${data.cancelYn || 'N/A'}
+                시간: ${formatDateTime(data.appDtm)}
+            `.trim();
+            document.getElementById('errorDetails').textContent = errorDetails;
+            
+            // 실패 섹션 표시
+            document.getElementById('failedSection').style.display = 'block';
+        }
+        
+        /**
+         * API 호출 오류 결과 표시
+         */
+        function displayErrorResult(tid, errorMessage) {
+            console.log('⚠️ API 오류 화면 표시');
+            
+            // 데이터 바인딩
+            document.getElementById('errorTid').textContent = tid || '알 수 없음';
+            document.getElementById('errorMessage').textContent = errorMessage;
+            document.getElementById('errorApiDetails').textContent = 
+                `API 호출 실패: ${errorMessage}\n시간: ${new Date().toLocaleString()}`;
+            
+            // 오류 섹션 표시
+            document.getElementById('errorSection').style.display = 'block';
+        }
+        
+        /**
+         * 상태 다시 확인
+         */
+        function retryStatusCheck() {
+            console.log('🔄 결제 상태 재확인');
+            
+            // 모든 섹션 숨김
+            document.getElementById('successSection').style.display = 'none';
+            document.getElementById('failedSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'none';
+            
+            // 로딩 표시 및 메시지 초기화
+            document.getElementById('loadingSection').style.display = 'block';
+            updateLoadingMessage('결제 결과를 다시 확인중입니다...');
+            
+            // 토큰 재확인 후 API 호출 (만료 체크 포함)
+            setTimeout(() => {
+                jwtToken = getValidJwtToken();
+                
+                if (currentTid) {
+                    if (jwtToken) {
+                        fetchPaymentStatus(currentTid);
+                    } else {
+                        // 유효한 토큰이 없으면 자동 로그인 시도
+                        performAutoLogin(currentTid);
+                    }
+                } else {
+                    parsePaymentResultFromUrl();
+                }
+            }, 500);
+        }
+        
+        /**
+         * VAN 이름 변환
+         */
+        function getVanName(van) {
+            const vanNames = {
+                
+                'BANKPAY': '계좌이체(뱅크페이)'
+                
+            };
+            return vanNames[van] || van || '정보 없음';
+        }
+        
+        /**
+         * 발행사 이름 변환 (은행코드)
+         */
+        function getIssuerName(issuer) {
+            const bankNames = {
+                '002': '산업은행',
+                '003': '기업은행',
+                '004': '국민은행',
+                '007': '수협은행',
+                '011': '농협은행',
+                '020': '우리은행',
+                '023': 'SC제일은행',
+                '027': '한국씨티은행',
+                '031': '대구은행',
+                '032': '부산은행',
+                '034': '광주은행',
+                '035': '제주은행',
+                '037': '전북은행',
+                '039': '경남은행',
+                '045': '새마을금고',
+                '048': '신협',
+                '071': '우체국',
+                '088': '신한은행',
+                '089': '케이뱅크',
+                '090': '카카오뱅크',
+                '092': '토스뱅크'
+             
+            };
+            return bankNames[issuer] || issuer || '정보 없음';
+        }
+        
+        /**
+         * 금액 포맷팅 (천 단위 콤마)
+         */
+        function formatAmount(amount) {
+            if (!amount) return '0';
+            return parseInt(amount).toLocaleString();
+        }
+        
+        /**
+         * 날짜시간 포맷팅 (YYYYMMDDHHmmss -> YYYY-MM-DD HH:mm:ss)
+         */
+        function formatDateTime(dtm) {
+            if (!dtm || dtm.length !== 14) return '시간 정보 없음';
+            
+            const year = dtm.substring(0, 4);
+            const month = dtm.substring(4, 6);
+            const day = dtm.substring(6, 8);
+            const hour = dtm.substring(8, 10);
+            const minute = dtm.substring(10, 12);
+            const second = dtm.substring(12, 14);
+            
+            return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        }
+        
+        /**
+         * 홈으로 돌아가기
+         */
+        function goHome() {
+            console.log('🏠 홈으로 이동');
+            // 결제 페이지로 돌아가거나 메인 페이지로 이동
+            window.location.href = '.....';
+        }
+        
+        /**
+         * 결제 다시 시도
+         */
+        function retryPayment() {
+            console.log('🔄 결제 재시도');
+            // 결제 페이지로 돌아가기
+            window.location.href = '/payment/BankPay_mobile_fixed.html';
+        }
+        
+     
+    </script>
+</body>
+</html>

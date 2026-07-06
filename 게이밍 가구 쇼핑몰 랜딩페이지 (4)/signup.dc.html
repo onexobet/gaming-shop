@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f6f7f9; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.6; }
+  ::selection { background:#dbe4ff; }
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; }
+  input { font-family:inherit; }
+  input:focus { outline:none; border-color:#3a56c5 !important; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;">
+
+  <header style="background:#fff;border-bottom:1px solid #ececef;">
+    <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;">
+      <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+    </nav>
+  </header>
+
+  <main style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;">
+    <div style="width:100%;max-width:400px;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <h1 style="font-weight:800;font-size:26px;letter-spacing:-.01em;">회원가입</h1>
+        <p style="font-size:14px;color:#8a8d94;margin-top:8px;">간단한 정보만 입력하면 끝나요</p>
+      </div>
+
+      <div style="background:#fff;border:1px solid #eceef1;border-radius:16px;padding:30px;">
+        <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:16px 0;">
+            <div style="font-size:18px;font-weight:800;color:#1f8a5b;margin-bottom:8px;">가입이 완료되었습니다</div>
+            <p style="font-size:14px;color:#55575d;">{{ who }}님, 환영합니다! 이제 로그인 후 이용하실 수 있어요.</p>
+            <a href="login.dc.html" style="display:inline-block;margin-top:20px;background:#1c1c1e;color:#fff;font-weight:700;font-size:14px;padding:12px 26px;border-radius:9px;">로그인하기</a>
+          </div>
+        </sc-if>
+        <sc-if value="{{ form }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">이름</label>
+              <input value="{{ name }}" onInput="{{ onName }}" placeholder="홍길동" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:12px 14px;font-size:14px;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">이메일</label>
+              <input value="{{ email }}" onInput="{{ onEmail }}" type="email" placeholder="you@example.com" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:12px 14px;font-size:14px;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">비밀번호</label>
+              <input value="{{ pw }}" onInput="{{ onPw }}" type="password" placeholder="8자 이상" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:12px 14px;font-size:14px;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">비밀번호 확인</label>
+              <input value="{{ pw2 }}" onInput="{{ onPw2 }}" type="password" placeholder="비밀번호 재입력" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:12px 14px;font-size:14px;" />
+            </div>
+            <label style="display:flex;align-items:center;gap:9px;font-size:13.5px;color:#55575d;cursor:pointer;user-select:none;">
+              <input type="checkbox" checked="{{ agree }}" onChange="{{ onAgree }}" style="width:17px;height:17px;accent-color:#3a56c5;cursor:pointer;" />
+              <span>이용약관 및 개인정보 처리방침에 동의합니다</span>
+            </label>
+            <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#d84040;font-weight:600;">{{ error }}</div></sc-if>
+            <button onClick="{{ submit }}" style="background:#1c1c1e;color:#fff;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;margin-top:4px;">가입하기</button>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="text-align:center;font-size:14px;color:#8a8d94;margin-top:20px;">
+        이미 회원이신가요? <a href="login.dc.html" style="color:#3a56c5;font-weight:700;">로그인</a>
+      </div>
+    </div>
+  </main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { name: '', email: '', pw: '', pw2: '', agree: false, error: '', done: false };
+
+  submit() {
+    const s = this.state;
+    if (!s.name.trim()) { this.setState({ error: '이름을 입력해주세요.' }); return; }
+    if (!/.+@.+\..+/.test(s.email)) { this.setState({ error: '올바른 이메일을 입력해주세요.' }); return; }
+    if (s.pw.length < 8) { this.setState({ error: '비밀번호는 8자 이상이어야 합니다.' }); return; }
+    if (s.pw !== s.pw2) { this.setState({ error: '비밀번호가 일치하지 않습니다.' }); return; }
+    if (!s.agree) { this.setState({ error: '약관에 동의해주세요.' }); return; }
+    this.setState({ done: true, error: '' });
+  }
+
+  renderVals() {
+    return {
+      name: this.state.name, email: this.state.email, pw: this.state.pw, pw2: this.state.pw2,
+      agree: this.state.agree, error: this.state.error,
+      done: this.state.done, form: !this.state.done, who: this.state.name || '회원',
+      onName: (e) => this.setState({ name: e.target.value, error: '' }),
+      onEmail: (e) => this.setState({ email: e.target.value, error: '' }),
+      onPw: (e) => this.setState({ pw: e.target.value, error: '' }),
+      onPw2: (e) => this.setState({ pw2: e.target.value, error: '' }),
+      onAgree: (e) => this.setState({ agree: e.target.checked, error: '' }),
+      submit: () => this.submit(),
+    };
+  }
+}
+</script>
+</body>
+</html>

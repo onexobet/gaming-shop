@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+# Design Component(.dc.html)를 시작 페이지로 노출하기 위한 정리 리다이렉트(선택)
+# 필요 없으면 지워도 됩니다.
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

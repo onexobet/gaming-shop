@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f4f5f7; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.5; }
+  a { color:inherit; text-decoration:none; }
+  input, select, textarea, button { font-family:inherit; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#3a56c5 !important; }
+  ::selection { background:#dbe4ff; }
+  .adminmain::-webkit-scrollbar { width:10px; }
+  .adminmain::-webkit-scrollbar-thumb { background:#d6d8de; border-radius:6px; }
+  @keyframes modalin { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</helmet>
+
+<div style="display:flex;height:100vh;overflow:hidden;">
+
+  <!-- SIDEBAR -->
+  <aside style="width:236px;flex:none;background:#17181c;color:#c7c9cf;display:flex;flex-direction:column;padding:22px 0;">
+    <div style="padding:0 24px 22px;border-bottom:1px solid #26282e;">
+      <div style="font-weight:800;font-size:20px;letter-spacing:.12em;color:#fff;">MORESEAT</div>
+      <div style="font-size:12px;color:#7f828b;margin-top:3px;">관리자 콘솔</div>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:16px 12px;flex:1;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6">
+        <button onClick="{{ t.onClick }}" style="{{ t.style }}">
+          <span style="width:7px;height:7px;border-radius:50%;background:{{ t.dot }};flex:none;"></span>
+          {{ t.label }}
+          <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}">
+            <span style="margin-left:auto;min-width:20px;height:20px;padding:0 6px;background:#e0533d;color:#fff;font-size:11px;font-weight:700;border-radius:999px;display:flex;align-items:center;justify-content:center;">{{ t.badge }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </nav>
+    <div style="padding:14px 24px 0;border-top:1px solid #26282e;">
+      <a href="index.html" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9a9da5;padding:8px 0;">← 쇼핑몰 화면 보기</a>
+      <div style="font-size:11px;color:#5c5f67;margin-top:8px;">관리자 · admin@moreseat.co.kr</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="adminmain" style="flex:1;overflow-y:auto;">
+    <header style="background:#fff;border-bottom:1px solid #e8e9ed;padding:20px 34px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;">
+      <div>
+        <h1 style="font-size:21px;font-weight:800;letter-spacing:-.01em;">{{ pageTitle }}</h1>
+        <div style="font-size:13px;color:#8a8d94;margin-top:2px;">{{ pageDesc }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="font-size:13px;color:#6d7076;">{{ today }}</div>
+        <span style="width:36px;height:36px;border-radius:50%;background:#eef1f8;color:#3a56c5;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;">관</span>
+      </div>
+    </header>
+
+    <div style="padding:30px 34px;">
+
+      <!-- DASHBOARD -->
+      <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-bottom:24px;">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:22px 24px;">
+              <div style="font-size:13px;color:#8a8d94;margin-bottom:10px;">{{ k.label }}</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-.02em;">{{ k.value }}</div>
+              <div style="font-size:12px;color:{{ k.subColor }};margin-top:8px;">{{ k.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:18px;">
+          <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:24px;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:20px;">최근 7일 매출</div>
+            <div style="display:flex;align-items:flex-end;gap:14px;height:180px;">
+              <sc-for list="{{ chart }}" as="c" hint-placeholder-count="7">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;">
+                  <div style="font-size:11px;color:#8a8d94;font-weight:600;">{{ c.label }}</div>
+                  <div style="width:100%;max-width:34px;border-radius:7px 7px 0 0;background:{{ c.color }};height:{{ c.height }};transition:height .3s;"></div>
+                  <div style="font-size:11px;color:#b0b3ba;">{{ c.day }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:24px;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:16px;">재고 부족 알림</div>
+            <sc-if value="{{ hasLowStock }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <sc-for list="{{ lowStock }}" as="p" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#fef4f2;border:1px solid #f7ddd6;border-radius:10px;">
+                    <span style="font-size:13.5px;font-weight:600;">{{ p.name }}</span>
+                    <span style="font-size:13px;font-weight:700;color:#d84040;">{{ p.stock }}개 남음</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ noLowStock }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;color:#8a8d94;padding:20px 0;text-align:center;">재고가 충분합니다 👍</div>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:24px;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:16px;">최근 주문</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:600px;">
+              <thead>
+                <tr style="color:#8a8d94;text-align:left;border-bottom:1px solid #eceef1;">
+                  <th style="padding:10px 12px;font-weight:600;">주문번호</th>
+                  <th style="padding:10px 12px;font-weight:600;">고객</th>
+                  <th style="padding:10px 12px;font-weight:600;">상품</th>
+                  <th style="padding:10px 12px;font-weight:600;">금액</th>
+                  <th style="padding:10px 12px;font-weight:600;">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ recentOrders }}" as="o" hint-placeholder-count="5">
+                  <tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:12px;font-family:ui-monospace,monospace;font-size:12.5px;color:#6d7076;">{{ o.id }}</td>
+                    <td style="padding:12px;font-weight:600;">{{ o.customer }}</td>
+                    <td style="padding:12px;color:#55575d;">{{ o.product }}</td>
+                    <td style="padding:12px;font-weight:700;">{{ o.amountFmt }}</td>
+                    <td style="padding:12px;"><span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;color:{{ o.statusColor }};background:{{ o.statusBg }};">{{ o.status }}</span></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- PRODUCTS -->
+      <sc-if value="{{ isProducts }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+          <button onClick="{{ openNew }}" style="background:#1c1c1e;color:#fff;font-weight:700;font-size:14px;padding:11px 20px;border:none;border-radius:9px;cursor:pointer;">+ 상품 등록</button>
+        </div>
+        <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px;">
+              <thead>
+                <tr style="color:#8a8d94;text-align:left;background:#fafbfc;border-bottom:1px solid #eceef1;">
+                  <th style="padding:13px 16px;font-weight:600;">상품</th>
+                  <th style="padding:13px 16px;font-weight:600;">카테고리</th>
+                  <th style="padding:13px 16px;font-weight:600;">가격</th>
+                  <th style="padding:13px 16px;font-weight:600;">재고</th>
+                  <th style="padding:13px 16px;font-weight:600;">상태</th>
+                  <th style="padding:13px 16px;font-weight:600;text-align:right;">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ products }}" as="p" hint-placeholder-count="6">
+                  <tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:12px 16px;">
+                      <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="width:44px;height:44px;border-radius:9px;background:#eef0f3 center/cover;background-image:{{ p.bg }};flex:none;"></span>
+                        <span style="font-weight:600;">{{ p.name }}</span>
+                      </div>
+                    </td>
+                    <td style="padding:12px 16px;color:#55575d;">{{ p.cat }}</td>
+                    <td style="padding:12px 16px;font-weight:700;">{{ p.priceFmt }}</td>
+                    <td style="padding:12px 16px;"><span style="font-weight:700;color:{{ p.stockColor }};">{{ p.stock }}</span></td>
+                    <td style="padding:12px 16px;"><span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;color:{{ p.statusColor }};background:{{ p.statusBg }};">{{ p.status }}</span></td>
+                    <td style="padding:12px 16px;text-align:right;white-space:nowrap;">
+                      <button onClick="{{ p.onEdit }}" style="font-size:13px;font-weight:600;color:#3a56c5;background:#eef1f8;border:none;padding:7px 13px;border-radius:7px;cursor:pointer;margin-right:6px;">수정</button>
+                      <button onClick="{{ p.onDelete }}" style="font-size:13px;font-weight:600;color:#d84040;background:#fdeeeb;border:none;padding:7px 13px;border-radius:7px;cursor:pointer;">삭제</button>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ORDERS -->
+      <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:820px;">
+              <thead>
+                <tr style="color:#8a8d94;text-align:left;background:#fafbfc;border-bottom:1px solid #eceef1;">
+                  <th style="padding:13px 16px;font-weight:600;">주문번호</th>
+                  <th style="padding:13px 16px;font-weight:600;">고객</th>
+                  <th style="padding:13px 16px;font-weight:600;">상품</th>
+                  <th style="padding:13px 16px;font-weight:600;">금액</th>
+                  <th style="padding:13px 16px;font-weight:600;">주문일</th>
+                  <th style="padding:13px 16px;font-weight:600;">배송상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ orders }}" as="o" hint-placeholder-count="6">
+                  <tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:12px 16px;font-family:ui-monospace,monospace;font-size:12.5px;color:#6d7076;">{{ o.id }}</td>
+                    <td style="padding:12px 16px;font-weight:600;">{{ o.customer }}</td>
+                    <td style="padding:12px 16px;color:#55575d;">{{ o.product }}</td>
+                    <td style="padding:12px 16px;font-weight:700;">{{ o.amountFmt }}</td>
+                    <td style="padding:12px 16px;color:#8a8d94;">{{ o.date }}</td>
+                    <td style="padding:12px 16px;">
+                      <select value="{{ o.status }}" onChange="{{ o.onStatus }}" style="font-size:13px;font-weight:600;padding:7px 10px;border:1px solid #dcdee3;border-radius:8px;background:#fff;cursor:pointer;color:{{ o.statusColor }};">
+                        <sc-for list="{{ statusOptions }}" as="s" hint-placeholder-count="5">
+                          <option value="{{ s }}">{{ s }}</option>
+                        </sc-for>
+                      </select>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- MEMBERS -->
+      <sc-if value="{{ isMembers }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:700px;">
+              <thead>
+                <tr style="color:#8a8d94;text-align:left;background:#fafbfc;border-bottom:1px solid #eceef1;">
+                  <th style="padding:13px 16px;font-weight:600;">이름</th>
+                  <th style="padding:13px 16px;font-weight:600;">이메일</th>
+                  <th style="padding:13px 16px;font-weight:600;">가입일</th>
+                  <th style="padding:13px 16px;font-weight:600;">주문수</th>
+                  <th style="padding:13px 16px;font-weight:600;">등급</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ members }}" as="m" hint-placeholder-count="5">
+                  <tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:12px 16px;">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="width:34px;height:34px;border-radius:50%;background:#eef1f8;color:#3a56c5;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;">{{ m.initial }}</span>
+                        <span style="font-weight:600;">{{ m.name }}</span>
+                      </div>
+                    </td>
+                    <td style="padding:12px 16px;color:#55575d;">{{ m.email }}</td>
+                    <td style="padding:12px 16px;color:#8a8d94;">{{ m.joined }}</td>
+                    <td style="padding:12px 16px;font-weight:600;">{{ m.orders }}건</td>
+                    <td style="padding:12px 16px;"><span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;color:{{ m.gradeColor }};background:{{ m.gradeBg }};">{{ m.grade }}</span></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- SUPPORT -->
+      <sc-if value="{{ isSupport }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <sc-for list="{{ inquiries }}" as="q" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;overflow:hidden;">
+              <button onClick="{{ q.onToggle }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:18px 22px;background:none;border:none;cursor:pointer;text-align:left;">
+                <span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;color:{{ q.statusColor }};background:{{ q.statusBg }};flex:none;">{{ q.status }}</span>
+                <span style="font-size:12px;color:#9a9da5;flex:none;width:70px;">{{ q.type }}</span>
+                <span style="font-weight:600;flex:1;">{{ q.subject }}</span>
+                <span style="font-size:12.5px;color:#9a9da5;flex:none;">{{ q.name }} · {{ q.date }}</span>
+              </button>
+              <sc-if value="{{ q.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 22px 22px;border-top:1px solid #f0f1f4;">
+                  <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.7;color:#3a3c42;margin:18px 0;">{{ q.message }}</div>
+                  <sc-if value="{{ q.hasReply }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:#eef1f8;border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.7;color:#2b3a6b;">
+                      <div style="font-size:12px;font-weight:700;color:#3a56c5;margin-bottom:6px;">MORESEAT 답변</div>
+                      {{ q.reply }}
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ q.noReply }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                      <textarea value="{{ replyText }}" onInput="{{ onReplyChange }}" placeholder="답변을 입력하세요" style="width:100%;min-height:90px;border:1px solid #dcdee3;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.6;resize:vertical;"></textarea>
+                      <button onClick="{{ q.onReply }}" style="align-self:flex-end;background:#3a56c5;color:#fff;font-weight:700;font-size:14px;padding:10px 20px;border:none;border-radius:9px;cursor:pointer;">답변 등록</button>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- PAYMENT -->
+      <sc-if value="{{ isPayment }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:18px;max-width:740px;">
+          <div style="background:#fff7ed;border:1px solid #f3d7ab;border-radius:12px;padding:16px 18px;font-size:13.5px;line-height:1.65;color:#8a5a1f;">
+            ⚠ 실제 카드 결제는 보안상 서버(백엔드)에서 시크릿 키를 처리해야 합니다. 이 화면은 연동 설정을 저장해 두는 곳으로, 저장된 값은 나중에 결제 서버에 그대로 연결할 수 있습니다.
+          </div>
+
+          <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:24px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:700;">PG 연동 정보</div>
+              <span style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;color:{{ connColor }};background:{{ connBg }};">{{ connLabel }}</span>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:220px;">
+                <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">결제대행사 (PG)</label>
+                <select value="{{ pay.provider }}" onChange="{{ onPayProvider }}" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;background:#fff;cursor:pointer;">
+                  <sc-for list="{{ payProviders }}" as="pv" hint-placeholder-count="5">
+                    <option value="{{ pv }}">{{ pv }}</option>
+                  </sc-for>
+                </select>
+              </div>
+              <div style="flex:1;min-width:220px;">
+                <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">연동 모드</label>
+                <select value="{{ pay.mode }}" onChange="{{ onPayMode }}" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;background:#fff;cursor:pointer;">
+                  <option value="test">테스트 모드</option>
+                  <option value="live">라이브 모드</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:24px;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:18px;">API 키</div>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div>
+                <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">클라이언트 키 (공개)</label>
+                <input value="{{ pay.clientKey }}" onInput="{{ onPayClient }}" placeholder="test_ck_..." style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;font-family:ui-monospace,monospace;" />
+              </div>
+              <div>
+                <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">시크릿 키 (비공개)</label>
+                <input value="{{ pay.secretKey }}" onInput="{{ onPaySecret }}" type="password" placeholder="test_sk_..." style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;font-family:ui-monospace,monospace;" />
+                <div style="font-size:12px;color:#a0a2a8;margin-top:6px;">시크릿 키는 실제 서비스에서 브라우저에 저장하지 말고 서버에만 보관해야 합니다.</div>
+              </div>
+              <div>
+                <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">웹훅(Webhook) URL</label>
+                <input value="{{ pay.webhook }}" onInput="{{ onPayWebhook }}" placeholder="https://..." style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;font-family:ui-monospace,monospace;" />
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #e8e9ed;border-radius:14px;padding:24px;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:18px;">사용할 결제 수단</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;">
+              <sc-for list="{{ payMethods }}" as="pm" hint-placeholder-count="4">
+                <button onClick="{{ pm.onToggle }}" style="{{ pm.style }}">
+                  <span style="{{ pm.box }}">{{ pm.check }}</span>
+                  {{ pm.label }}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;justify-content:flex-end;">
+            <sc-if value="{{ payMsg }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13px;font-weight:600;color:#3a56c5;margin-right:auto;">{{ payMsg }}</span>
+            </sc-if>
+            <button onClick="{{ testConnection }}" style="font-size:14px;font-weight:600;color:#3a56c5;background:#eef1f8;border:none;padding:12px 22px;border-radius:9px;cursor:pointer;">연동 테스트</button>
+            <button onClick="{{ savePayment }}" style="font-size:14px;font-weight:700;color:#fff;background:#1c1c1e;border:none;padding:12px 26px;border-radius:9px;cursor:pointer;">설정 저장</button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- PRODUCT MODAL -->
+  <sc-if value="{{ editOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePf }}" style="position:fixed;inset:0;background:rgba(20,21,25,.5);z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div onClick="{{ stop }}" style="background:#fff;border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:28px;animation:modalin .2s ease;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+          <h2 style="font-size:19px;font-weight:800;">{{ modalTitle }}</h2>
+          <button onClick="{{ closePf }}" style="width:32px;height:32px;border:none;background:#f2f3f5;border-radius:8px;font-size:16px;cursor:pointer;color:#6d7076;">✕</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">상품명</label>
+            <input value="{{ pf.name }}" onInput="{{ onPfName }}" placeholder="예: APEX 인체공학 체어" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" />
+          </div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">카테고리</label>
+              <select value="{{ pf.cat }}" onChange="{{ onPfCat }}" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;background:#fff;cursor:pointer;">
+                <option value="책상">책상</option>
+                <option value="의자">의자</option>
+              </select>
+            </div>
+            <div style="flex:1;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">상태</label>
+              <select value="{{ pf.status }}" onChange="{{ onPfStatus }}" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;background:#fff;cursor:pointer;">
+                <option value="판매중">판매중</option>
+                <option value="품절">품절</option>
+                <option value="숨김">숨김</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">가격 (원)</label>
+              <input value="{{ pf.price }}" onInput="{{ onPfPrice }}" type="number" placeholder="349000" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" />
+            </div>
+            <div style="flex:1;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">재고 (개)</label>
+              <input value="{{ pf.stock }}" onInput="{{ onPfStock }}" type="number" placeholder="50" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" />
+            </div>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">상품 설명</label>
+            <textarea value="{{ pf.desc }}" onInput="{{ onPfDesc }}" placeholder="상품 설명을 입력하세요" style="width:100%;min-height:80px;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;line-height:1.6;resize:vertical;"></textarea>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">이미지 URL (선택)</label>
+            <input value="{{ pf.photo }}" onInput="{{ onPfPhoto }}" placeholder="https://..." style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" />
+          </div>
+          <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;color:#d84040;font-weight:600;">{{ formError }}</div>
+          </sc-if>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+            <button onClick="{{ closePf }}" style="font-size:14px;font-weight:600;color:#55575d;background:#f2f3f5;border:none;padding:11px 20px;border-radius:9px;cursor:pointer;">취소</button>
+            <button onClick="{{ savePf }}" style="font-size:14px;font-weight:700;color:#fff;background:#1c1c1e;border:none;padding:11px 24px;border-radius:9px;cursor:pointer;">저장</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'moreseat_admin_v1';
+
+class Component extends DCLogic {
+  state = {
+    tab: 'dashboard',
+    data: this.load(),
+    editOpen: false,
+    pf: this.blank(),
+    formError: '',
+    expanded: null,
+    replyText: '',
+    catOpen: false,
+    cf: this.blankCat(),
+    catError: '',
+    pay: null,
+    payMsg: '',
+  };
+
+  blank() {
+    return { id: null, name: '', cat: '책상', price: '', stock: '', desc: '', status: '판매중', photo: '' };
+  }
+
+  blankCat() {
+    return { id: null, name: '', slug: '', visible: true, origName: '' };
+  }
+
+  seed() {
+    return {
+      products: [
+        { id: 1, name: 'ELEVATE 전동 데스크', cat: '책상', price: 389000, stock: 42, status: '판매중', photo: 'https://images.unsplash.com/photo-1636489953081-c4ebbd50fa3a?fm=jpg&q=70&w=200&auto=format&fit=crop', desc: '전동 높이조절 스탠딩 데스크' },
+        { id: 2, name: 'CORNER L-데스크', cat: '책상', price: 259000, stock: 7, status: '판매중', photo: 'https://images.unsplash.com/photo-1601467075935-7e5c5c607074?fm=jpg&q=70&w=200&auto=format&fit=crop', desc: 'L자형 코너 데스크' },
+        { id: 3, name: 'COMPACT 1200 데스크', cat: '책상', price: 149000, stock: 0, status: '품절', photo: 'https://images.unsplash.com/photo-1594501252356-79ebbbb10dd9?fm=jpg&q=70&w=200&auto=format&fit=crop', desc: '1200mm 컴팩트 데스크' },
+        { id: 4, name: 'APEX 인체공학 체어', cat: '의자', price: 349000, stock: 28, status: '판매중', photo: 'https://images.unsplash.com/photo-1670946839270-cc4febd43b09?fm=jpg&q=70&w=200&auto=format&fit=crop', desc: '풀옵션 인체공학 체어' },
+        { id: 5, name: 'RECON 리클라이닝 체어', cat: '의자', price: 229000, stock: 5, status: '판매중', photo: 'https://images.unsplash.com/photo-1628358011851-c85d8fa59557?fm=jpg&q=70&w=200&auto=format&fit=crop', desc: '155° 리클라이닝 체어' },
+        { id: 6, name: 'FLOW 메쉬 체어', cat: '의자', price: 179000, stock: 63, status: '판매중', photo: 'https://images.unsplash.com/photo-1612011213721-3936d387f318?fm=jpg&q=70&w=200&auto=format&fit=crop', desc: '통기성 메쉬 체어' },
+      ],
+      orders: [
+        { id: 'O-20260706-001', customer: '김도현', product: 'APEX 인체공학 체어', amount: 349000, status: '결제완료', date: '2026-07-06' },
+        { id: 'O-20260705-014', customer: '이서연', product: 'ELEVATE 전동 데스크', amount: 389000, status: '배송중', date: '2026-07-05' },
+        { id: 'O-20260705-009', customer: '박준영', product: 'FLOW 메쉬 체어', amount: 179000, status: '배송완료', date: '2026-07-05' },
+        { id: 'O-20260704-021', customer: '최민준', product: 'CORNER L-데스크', amount: 259000, status: '배송준비', date: '2026-07-04' },
+        { id: 'O-20260704-003', customer: '정하윤', product: 'RECON 리클라이닝 체어', amount: 229000, status: '배송완료', date: '2026-07-04' },
+        { id: 'O-20260703-018', customer: '강지우', product: 'COMPACT 1200 데스크', amount: 149000, status: '취소', date: '2026-07-03' },
+      ],
+      members: [
+        { id: 1, name: '김도현', email: 'dohyun@example.com', joined: '2026-06-12', orders: 3, grade: 'VIP' },
+        { id: 2, name: '이서연', email: 'seoyeon@example.com', joined: '2026-06-20', orders: 1, grade: '일반' },
+        { id: 3, name: '박준영', email: 'junyoung@example.com', joined: '2026-06-28', orders: 2, grade: '일반' },
+        { id: 4, name: '최민준', email: 'minjun@example.com', joined: '2026-07-01', orders: 1, grade: '일반' },
+        { id: 5, name: '정하윤', email: 'hayoon@example.com', joined: '2026-07-02', orders: 1, grade: '일반' },
+      ],
+      inquiries: [
+        { id: 1, type: '배송', subject: '주문한 데스크 언제 도착하나요?', name: '이서연', date: '2026-07-05', status: '대기', message: 'ELEVATE 전동 데스크 주문했는데 배송이 언제쯤 될까요? 주말 전에 받고 싶습니다.', reply: '' },
+        { id: 2, type: '반품', subject: '색상이 생각과 달라 교환 원합니다', name: '박준영', date: '2026-07-04', status: '대기', message: '메쉬 체어 받았는데 실제 색이 조금 더 밝네요. 교환 가능한가요?', reply: '' },
+        { id: 3, type: 'A/S', subject: '의자 높이 조절 레버가 헐거워요', name: '정하윤', date: '2026-07-03', status: '답변완료', message: '리클라이닝 체어 사용 2주차인데 높이 레버가 헐거워졌습니다. A/S 요청드려요.', reply: '안녕하세요, MORESEAT입니다. A/S 접수 완료되었습니다. 담당 기사가 2일 내 연락드릴 예정입니다. 불편을 드려 죄송합니다.' },
+        { id: 4, type: '상품', subject: '전동 데스크 내구 하중이 궁금해요', name: '최민준', date: '2026-07-02', status: '답변완료', message: 'ELEVATE 데스크 상판이 견딜 수 있는 최대 하중이 얼마인가요?', reply: '최대 하중은 80kg이며, 모니터암·PC를 함께 올려도 안정적으로 사용 가능합니다.' },
+      ],
+      categories: [
+        { id: 1, name: '책상', slug: 'desk', visible: true },
+        { id: 2, name: '의자', slug: 'chair', visible: true },
+      ],
+      payment: {
+        provider: '토스페이먼츠', mode: 'test',
+        clientKey: '', secretKey: '',
+        webhook: 'https://api.moreseat.co.kr/webhook/payment',
+        methods: { card: true, kakao: true, transfer: false, phone: false },
+        connected: false,
+      },
+      revenue7: [820, 640, 910, 1180, 760, 1340, 1120],
+    };
+  }
+
+  load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (!p.categories) p.categories = [{ id: 1, name: '책상', slug: 'desk', visible: true }, { id: 2, name: '의자', slug: 'chair', visible: true }];
+        if (!p.payment) p.payment = { provider: '토스페이먼츠', mode: 'test', clientKey: '', secretKey: '', webhook: 'https://api.moreseat.co.kr/webhook/payment', methods: { card: true, kakao: true, transfer: false, phone: false }, connected: false };
+        return p;
+      }
+    } catch (e) {}
+    const s = this.seed();
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+    return s;
+  }
+
+  persist(data) {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+    this.setState({ data });
+  }
+
+  won(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); }
+
+  statusChip(s) {
+    const map = {
+      '결제완료': ['#2b6cb0', '#e5eefb'], '배송준비': ['#8a6d1f', '#faf1d8'],
+      '배송중': ['#7a3fd0', '#f0e8fb'], '배송완료': ['#1f8a5b', '#e2f4ec'], '취소': ['#9a9da5', '#f0f1f3'],
+    };
+    return map[s] || ['#55575d', '#f0f1f3'];
+  }
+  prodStatusChip(s) {
+    const map = { '판매중': ['#1f8a5b', '#e2f4ec'], '품절': ['#d84040', '#fdeeeb'], '숨김': ['#9a9da5', '#f0f1f3'] };
+    return map[s] || ['#55575d', '#f0f1f3'];
+  }
+
+  setTab(tab) { this.setState({ tab, expanded: null }); }
+
+  openNew() { this.setState({ editOpen: true, pf: this.blank(), formError: '' }); }
+  openEdit(p) { this.setState({ editOpen: true, pf: { ...p, price: String(p.price), stock: String(p.stock) }, formError: '' }); }
+  closePf() { this.setState({ editOpen: false, formError: '' }); }
+  setPf(field, val) { this.setState(s => ({ pf: { ...s.pf, [field]: val } })); }
+
+  savePf() {
+    const pf = this.state.pf;
+    if (!pf.name.trim()) { this.setState({ formError: '상품명을 입력하세요.' }); return; }
+    if (pf.price === '' || isNaN(Number(pf.price))) { this.setState({ formError: '가격을 숫자로 입력하세요.' }); return; }
+    const data = { ...this.state.data };
+    const rec = {
+      id: pf.id, name: pf.name.trim(), cat: pf.cat, price: Number(pf.price),
+      stock: Number(pf.stock) || 0, status: pf.status, desc: pf.desc, photo: pf.photo,
+    };
+    if (pf.id) {
+      data.products = data.products.map(p => p.id === pf.id ? rec : p);
+    } else {
+      rec.id = Date.now();
+      data.products = [rec, ...data.products];
+    }
+    this.persist(data);
+    this.setState({ editOpen: false, formError: '' });
+  }
+
+  deleteProduct(id) {
+    const data = { ...this.state.data, products: this.state.data.products.filter(p => p.id !== id) };
+    this.persist(data);
+  }
+
+  openNewCat() { this.setState({ catOpen: true, cf: this.blankCat(), catError: '' }); }
+  openEditCat(c) { this.setState({ catOpen: true, cf: { id: c.id, name: c.name, slug: c.slug, visible: c.visible, origName: c.name }, catError: '' }); }
+  closeCat() { this.setState({ catOpen: false, catError: '' }); }
+  setCf(field, val) { this.setState(s => ({ cf: { ...s.cf, [field]: val } })); }
+  saveCat() {
+    const cf = this.state.cf;
+    if (!cf.name.trim()) { this.setState({ catError: '카테고리명을 입력하세요.' }); return; }
+    const slug = (cf.slug || '').trim() || cf.name.trim();
+    const data = { ...this.state.data };
+    if (cf.id) {
+      data.categories = data.categories.map(c => c.id === cf.id ? { id: cf.id, name: cf.name.trim(), slug, visible: cf.visible !== false } : c);
+      if (cf.origName && cf.origName !== cf.name.trim()) {
+        data.products = data.products.map(p => p.cat === cf.origName ? { ...p, cat: cf.name.trim() } : p);
+      }
+    } else {
+      data.categories = [...data.categories, { id: Date.now(), name: cf.name.trim(), slug, visible: cf.visible !== false }];
+    }
+    this.persist(data);
+    this.setState({ catOpen: false, catError: '' });
+  }
+  deleteCat(id) {
+    const cat = this.state.data.categories.find(c => c.id === id);
+    const count = this.state.data.products.filter(p => p.cat === (cat && cat.name)).length;
+    if (count > 0) { alert('이 카테고리에 상품 ' + count + '개가 있어 삭제할 수 없습니다. 먼저 상품을 옮기거나 삭제하세요.'); return; }
+    const data = { ...this.state.data, categories: this.state.data.categories.filter(c => c.id !== id) };
+    this.persist(data);
+  }
+
+  getPay() { return this.state.pay || this.state.data.payment; }
+  setPay(field, val) { const b = this.getPay(); this.setState({ pay: { ...b, [field]: val }, payMsg: '' }); }
+  toggleMethod(m) { const b = this.getPay(); this.setState({ pay: { ...b, methods: { ...b.methods, [m]: !b.methods[m] } } }); }
+  testConnection() {
+    const pay = this.getPay();
+    if (!pay.clientKey.trim() || !pay.secretKey.trim()) { this.setState({ payMsg: '⚠ 클라이언트 키와 시크릿 키를 먼저 입력하세요.' }); return; }
+    this.setState({ pay: { ...pay, connected: true }, payMsg: '✓ ' + pay.provider + ' ' + (pay.mode === 'live' ? '라이브' : '테스트') + ' 연동 테스트 성공 (모의 응답)' });
+  }
+  savePayment() {
+    const pay = this.getPay();
+    this.persist({ ...this.state.data, payment: pay });
+    this.setState({ payMsg: '✓ 결제 설정이 저장되었습니다.' });
+  }
+
+  setOrderStatus(id, status) {
+    const data = { ...this.state.data, orders: this.state.data.orders.map(o => o.id === id ? { ...o, status } : o) };
+    this.persist(data);
+  }
+
+  toggleInquiry(id) {
+    const open = this.state.expanded === id;
+    const q = this.state.data.inquiries.find(i => i.id === id);
+    this.setState({ expanded: open ? null : id, replyText: (!open && q) ? q.reply : '' });
+  }
+  submitReply(id) {
+    const reply = this.state.replyText.trim();
+    if (!reply) return;
+    const data = { ...this.state.data, inquiries: this.state.data.inquiries.map(q => q.id === id ? { ...q, reply, status: '답변완료' } : q) };
+    this.persist(data);
+    this.setState({ replyText: '' });
+  }
+
+  renderVals() {
+    const d = this.state.data;
+    const tab = this.state.tab;
+    const pendingInq = d.inquiries.filter(q => q.status === '대기').length;
+
+    const meta = {
+      dashboard: ['대시보드', '쇼핑몰 운영 현황을 한눈에'],
+      products: ['상품 관리', '상품 등록·수정과 재고를 관리하세요'],
+      orders: ['주문 관리', '주문 상태를 확인하고 변경하세요'],
+      payment: ['결제 연동', '결제 API(PG) 연동 설정 · 실제 결제는 서버 연동이 필요합니다'],
+      members: ['회원 관리', '가입 회원과 등급을 확인하세요'],
+      support: ['고객센터', '1:1 문의에 답변하세요'],
+    };
+
+    const tabDefs = [
+      { key: 'dashboard', label: '대시보드', dot: '#3a56c5' },
+      { key: 'products', label: '상품 관리', dot: '#1f8a5b' },
+      { key: 'orders', label: '주문 관리', dot: '#7a3fd0' },
+      { key: 'payment', label: '결제 연동', dot: '#2b9fb0' },
+      { key: 'members', label: '회원 관리', dot: '#c98a1f' },
+      { key: 'support', label: '고객센터', dot: '#e0533d', badge: pendingInq || null },
+    ];
+    const tabs = tabDefs.map(t => ({
+      ...t,
+      onClick: () => this.setTab(t.key),
+      style: {
+        display: 'flex', alignItems: 'center', gap: '11px', width: '100%', textAlign: 'left',
+        padding: '11px 14px', borderRadius: '9px', border: 'none', cursor: 'pointer',
+        fontSize: '14px', fontWeight: 600,
+        background: tab === t.key ? '#282a31' : 'transparent',
+        color: tab === t.key ? '#fff' : '#c7c9cf',
+      },
+    }));
+
+    const validRevenue = d.orders.filter(o => o.status !== '취소').reduce((a, o) => a + o.amount, 0);
+    const kpis = [
+      { label: '총 매출', value: this.won(validRevenue), sub: '취소 제외 · 전체 기간', subColor: '#8a8d94' },
+      { label: '총 주문', value: d.orders.length + '건', sub: '취소 ' + d.orders.filter(o => o.status === '취소').length + '건 포함', subColor: '#8a8d94' },
+      { label: '회원 수', value: d.members.length + '명', sub: 'VIP ' + d.members.filter(m => m.grade === 'VIP').length + '명', subColor: '#1f8a5b' },
+      { label: '미답변 문의', value: pendingInq + '건', sub: pendingInq > 0 ? '답변이 필요합니다' : '모두 처리 완료', subColor: pendingInq > 0 ? '#d84040' : '#1f8a5b' },
+    ];
+
+    const maxRev = Math.max(...d.revenue7, 1);
+    const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+    const chart = d.revenue7.map((v, i) => ({
+      label: (v / 10).toFixed(0) + '만',
+      day: dayLabels[i],
+      height: Math.max(6, Math.round((v / maxRev) * 100)) + '%',
+      color: i === d.revenue7.length - 1 ? '#3a56c5' : '#c3ccec',
+    }));
+
+    const lowStock = d.products.filter(p => p.stock < 10).map(p => ({ name: p.name, stock: p.stock }));
+
+    const decorateOrder = o => {
+      const [c, b] = this.statusChip(o.status);
+      return { ...o, amountFmt: this.won(o.amount), statusColor: c, statusBg: b, onStatus: (e) => this.setOrderStatus(o.id, e.target.value) };
+    };
+
+    const products = d.products.map(p => {
+      const [sc, sb] = this.prodStatusChip(p.status);
+      return {
+        ...p, priceFmt: this.won(p.price),
+        bg: p.photo ? ('url(' + p.photo + ')') : 'none',
+        stockColor: p.stock === 0 ? '#d84040' : (p.stock < 10 ? '#c98a1f' : '#1c1c1e'),
+        statusColor: sc, statusBg: sb,
+        onEdit: () => this.openEdit(p), onDelete: () => this.deleteProduct(p.id),
+      };
+    });
+
+    const members = d.members.map(m => ({
+      ...m, initial: m.name.charAt(0),
+      gradeColor: m.grade === 'VIP' ? '#8a6d1f' : '#55575d',
+      gradeBg: m.grade === 'VIP' ? '#faf1d8' : '#f0f1f3',
+    }));
+
+    const inquiries = d.inquiries.map(q => {
+      const [c, b] = q.status === '대기' ? ['#e0533d', '#fdeeeb'] : ['#1f8a5b', '#e2f4ec'];
+      const isOpen = this.state.expanded === q.id;
+      const hasReply = !!q.reply;
+      return {
+        ...q, statusColor: c, statusBg: b, isOpen, hasReply, noReply: isOpen && !hasReply,
+        onToggle: () => this.toggleInquiry(q.id), onReply: () => this.submitReply(q.id),
+      };
+    });
+
+    const pay = this.getPay();
+    const conn = pay.connected ? ['연결됨', '#1f8a5b', '#e2f4ec'] : ['미연동', '#9a9da5', '#f0f1f3'];
+    const methodDefs = [
+      { key: 'card', label: '신용/체크카드' }, { key: 'kakao', label: '카카오페이' },
+      { key: 'transfer', label: '계좌이체' }, { key: 'phone', label: '휴대폰 결제' },
+    ];
+    const payMethods = methodDefs.map(m => {
+      const on = !!pay.methods[m.key];
+      return {
+        label: m.label, onToggle: () => this.toggleMethod(m.key),
+        style: {
+          display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 16px', borderRadius: '10px',
+          cursor: 'pointer', fontSize: '14px', fontWeight: 600, textAlign: 'left', width: '100%',
+          background: on ? '#eef1f8' : '#f7f8fa', color: on ? '#2b3a6b' : '#8a8d94',
+          border: '1px solid ' + (on ? '#c3ccec' : '#e6e7eb'),
+        },
+        box: {
+          width: '18px', height: '18px', borderRadius: '5px', flex: 'none', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#fff',
+          background: on ? '#3a56c5' : 'transparent', border: '1px solid ' + (on ? '#3a56c5' : '#c3c6cc'),
+        },
+        check: on ? '✓' : '',
+      };
+    });
+
+    const [pt, pd] = meta[tab];
+
+    return {
+      isPayment: tab === 'payment', pay,
+      payProviders: ['토스페이먼츠', '포트원(아임포트)', 'KG이니시스', 'NHN KCP', '카카오페이'],
+      payMethods, payMsg: this.state.payMsg,
+      connLabel: conn[0], connColor: conn[1], connBg: conn[2],
+      onPayProvider: (e) => this.setPay('provider', e.target.value),
+      onPayMode: (e) => this.setPay('mode', e.target.value),
+      onPayClient: (e) => this.setPay('clientKey', e.target.value),
+      onPaySecret: (e) => this.setPay('secretKey', e.target.value),
+      onPayWebhook: (e) => this.setPay('webhook', e.target.value),
+      testConnection: () => this.testConnection(), savePayment: () => this.savePayment(),
+      tabs,
+      pageTitle: pt, pageDesc: pd, today: '2026. 07. 06',
+      isDashboard: tab === 'dashboard', isProducts: tab === 'products', isOrders: tab === 'orders',
+      isMembers: tab === 'members', isSupport: tab === 'support',
+      kpis, chart, lowStock, hasLowStock: lowStock.length > 0, noLowStock: lowStock.length === 0,
+      recentOrders: d.orders.slice(0, 5).map(decorateOrder),
+      orders: d.orders.map(decorateOrder),
+      products, members, inquiries,
+      statusOptions: ['결제완료', '배송준비', '배송중', '배송완료', '취소'],
+      editOpen: this.state.editOpen, pf: this.state.pf, formError: this.state.formError,
+      modalTitle: this.state.pf.id ? '상품 수정' : '상품 등록',
+      openNew: () => this.openNew(), closePf: () => this.closePf(), savePf: () => this.savePf(),
+      stop: (e) => e.stopPropagation(),
+      onPfName: (e) => this.setPf('name', e.target.value),
+      onPfCat: (e) => this.setPf('cat', e.target.value),
+      onPfStatus: (e) => this.setPf('status', e.target.value),
+      onPfPrice: (e) => this.setPf('price', e.target.value),
+      onPfStock: (e) => this.setPf('stock', e.target.value),
+      onPfDesc: (e) => this.setPf('desc', e.target.value),
+      onPfPhoto: (e) => this.setPf('photo', e.target.value),
+      replyText: this.state.replyText,
+      onReplyChange: (e) => this.setState({ replyText: e.target.value }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#ffffff; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  ::selection { background:#dbe4ff; }
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; }
+  @keyframes toastin { from{opacity:0;transform:translate(-50%,12px)} to{opacity:1;transform:translate(-50%,0)} }
+</style>
+</helmet>
+
+<div id="top" style="min-height:100vh;">
+
+  <!-- NAV -->
+  <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
+    <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
+      <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
+        <div style="position:relative;" onMouseEnter="{{ openMenu }}" onMouseLeave="{{ closeMenu }}">
+          <a href="index.html#category" style-hover="{{ linkHover }}">카테고리 ▾</a>
+          <sc-if value="{{ catMenu }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:100%;left:-20px;padding-top:14px;z-index:60;">
+              <div style="background:#fff;border:1px solid #eceef1;border-radius:14px;box-shadow:0 24px 54px -20px rgba(0,0,0,.28);padding:16px;width:460px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+                  <sc-for list="{{ menuCats }}" as="c" hint-placeholder-count="8">
+                    <a href="{{ c.href }}" style="display:block;padding:11px 14px;border-radius:9px;font-size:14.5px;font-weight:600;color:#33353a;" style-hover="{{ menuItemHover }}">{{ c.name }}</a>
+                  </sc-for>
+                </div>
+                <a href="category.dc.html?cat=all" style="display:block;text-align:center;margin-top:8px;padding-top:12px;border-top:1px solid #f0f1f4;font-size:13.5px;font-weight:700;color:#3a56c5;">전체 제품 보기 →</a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        <a href="index.html#products" style-hover="{{ linkHover }}">인기제품</a>
+        <a href="reviews.dc.html" style-hover="{{ linkHover }}">후기</a>
+        <a href="support.dc.html?page=contact" style-hover="{{ linkHover }}">문의</a>
+      </div>
+      <div style="flex:1;"></div>
+      <a href="cart.dc.html" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#333338;">
+        <span>장바구니</span>
+        <span style="min-width:22px;height:22px;padding:0 6px;background:#1c1c1e;color:#fff;border-radius:999px;font-size:12px;display:flex;align-items:center;justify-content:center;">{{ cart }}</span>
+      </a>
+    </nav>
+  </header>
+
+  <sc-if value="{{ found }}" hint-placeholder-val="{{ true }}">
+  <div>
+    <!-- BREADCRUMB -->
+    <section style="max-width:1180px;margin:0 auto;padding:26px 28px 0;">
+      <div style="font-size:13px;color:#9a9aa0;">
+        <a href="index.html" style-hover="{{ linkHover }}">홈</a> <span style="margin:0 6px;">›</span>
+        <a href="{{ catHref }}" style-hover="{{ linkHover }}">{{ p.catName }}</a> <span style="margin:0 6px;">›</span>
+        <span style="color:#55555c;">{{ p.name }}</span>
+      </div>
+    </section>
+
+    <!-- DETAIL -->
+    <section style="max-width:1180px;margin:0 auto;padding:24px 28px 60px;display:grid;grid-template-columns:1fr 1fr;gap:48px;">
+      <div>
+        <div style="position:relative;aspect-ratio:1/1;background:#f2f3f5;border-radius:18px;overflow:hidden;">
+          <img src="{{ p.photo }}" alt="{{ p.name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <span style="font-size:12px;font-weight:700;color:#3a56c5;background:#eef1f8;padding:5px 11px;border-radius:999px;">{{ p.catName }}</span>
+          <sc-if value="{{ p.hasBadge }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12px;font-weight:800;color:#fff;background:#1c1c1e;padding:5px 10px;border-radius:6px;">{{ p.badge }}</span>
+          </sc-if>
+        </div>
+        <h1 style="font-weight:800;font-size:clamp(26px,3.4vw,34px);letter-spacing:-.02em;line-height:1.2;">{{ p.name }}</h1>
+        <div style="font-size:13.5px;color:#f4a51c;margin-top:12px;">★ {{ p.rating }} <span style="color:#9a9aa0;">· 후기 {{ p.reviews }}개</span></div>
+        <p style="font-size:15px;line-height:1.75;color:#55555c;margin-top:18px;">{{ p.desc }}</p>
+
+        <div style="font-weight:800;font-size:32px;letter-spacing:-.02em;margin:24px 0;">₩{{ p.priceFmt }}</div>
+
+        <div style="border-top:1px solid #eceef1;border-bottom:1px solid #eceef1;padding:20px 0;display:flex;flex-direction:column;gap:12px;">
+          <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="3">
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:14.5px;color:#3a3c42;">
+              <span style="color:#3a56c5;font-weight:800;flex:none;">✓</span> {{ f }}
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+          <span style="font-size:14px;color:#55575d;">수량</span>
+          <div style="display:flex;align-items:center;border:1px solid #dcdee3;border-radius:9px;overflow:hidden;">
+            <button onClick="{{ dec }}" style="width:40px;height:42px;border:none;background:#fff;font-size:18px;cursor:pointer;color:#55555c;">−</button>
+            <span style="width:48px;text-align:center;font-weight:700;font-size:15px;">{{ qty }}</span>
+            <button onClick="{{ inc }}" style="width:40px;height:42px;border:none;background:#fff;font-size:18px;cursor:pointer;color:#55555c;">+</button>
+          </div>
+          <span style="font-size:13px;color:{{ stockColor }};font-weight:600;">{{ stockLabel }}</span>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:22px;">
+          <button onClick="{{ addQty }}" style="flex:1;background:#fff;color:#1c1c1e;font-weight:700;font-size:16px;padding:15px;border:1px solid #1c1c1e;border-radius:10px;cursor:pointer;" style-hover="{{ ghostHover }}">장바구니 담기</button>
+          <a href="https://smartstore.naver.com" target="_blank" style="flex:1;text-align:center;background:#1c1c1e;color:#fff;font-weight:700;font-size:16px;padding:15px;border-radius:10px;" style-hover="{{ darkHover }}">바로 구매</a>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+          <a href="support.dc.html?page=contact" style="flex:1;text-align:center;background:#fae100;color:#191600;font-weight:700;font-size:15px;padding:13px;border-radius:10px;" style-hover="{{ kakaoHover }}">1:1 문의</a>
+        </div>
+        <div style="font-size:12.5px;color:#9a9aa0;margin-top:18px;line-height:1.9;">전국 무료배송 · A/S 3년 무상 보장 · 100일 무료 체험</div>
+      </div>
+    </section>
+
+    <!-- REVIEWS PREVIEW -->
+    <section style="max-width:1180px;margin:0 auto;padding:0 28px 40px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;gap:16px;flex-wrap:wrap;">
+        <h2 style="font-weight:800;font-size:22px;letter-spacing:-.01em;">이 상품 후기</h2>
+        <a href="reviews.dc.html" style="font-size:14px;font-weight:600;color:#3a56c5;" style-hover="{{ linkHover }}">전체 후기 보기 →</a>
+      </div>
+      <sc-if value="{{ hasReviews }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
+          <sc-for list="{{ prodReviews }}" as="r" hint-placeholder-count="2">
+            <div style="border:1px solid #ececef;border-radius:14px;padding:22px;">
+              <div style="color:#f4a51c;font-size:14px;letter-spacing:2px;margin-bottom:10px;">{{ r.stars }}</div>
+              <p style="font-size:14.5px;line-height:1.7;color:#2f2f34;">{{ r.text }}</p>
+              <div style="font-size:12.5px;color:#9a9aa0;margin-top:12px;">{{ r.name }} · {{ r.date }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noReviews }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:14px;color:#9a9aa0;padding:20px 0;">아직 등록된 후기가 없습니다.</div>
+      </sc-if>
+    </section>
+
+    <!-- RELATED -->
+    <section style="background:#f6f7f9;">
+      <div style="max-width:1180px;margin:0 auto;padding:48px 28px;">
+        <h2 style="font-weight:800;font-size:22px;letter-spacing:-.01em;margin-bottom:22px;">함께 보면 좋은 제품</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;">
+          <sc-for list="{{ related }}" as="rp" hint-placeholder-count="4">
+            <a href="{{ rp.href }}" style="background:#fff;border-radius:14px;overflow:hidden;display:block;" style-hover="{{ cardHover }}">
+              <div style="position:relative;aspect-ratio:1/1;background:#eef0f3;">
+                <img src="{{ rp.photo }}" alt="{{ rp.name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+              </div>
+              <div style="padding:14px 16px 18px;">
+                <div style="font-weight:700;font-size:15px;">{{ rp.name }}</div>
+                <div style="font-weight:800;font-size:16px;margin-top:6px;">₩{{ rp.priceFmt }}</div>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ notFound }}" hint-placeholder-val="{{ false }}">
+    <section style="max-width:1180px;margin:0 auto;padding:100px 28px;text-align:center;">
+      <div style="font-size:20px;font-weight:700;margin-bottom:12px;">상품을 찾을 수 없습니다.</div>
+      <a href="index.html" style="color:#3a56c5;font-weight:600;" style-hover="{{ linkHover }}">← 홈으로 돌아가기</a>
+    </section>
+  </sc-if>
+
+  <!-- FOOTER -->
+  <footer style="background:#2a2a2d;color:#a2a2a8;">
+    <div style="max-width:1280px;margin:0 auto;padding:34px 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;">
+      <div style="font-weight:800;font-size:20px;letter-spacing:.12em;color:#fff;">MORESEAT</div>
+      <div style="font-size:12.5px;color:#8a8a90;">대한매니지먼트(주) · 사업자등록번호 129-86-45068</div>
+    </div>
+  </footer>
+
+  <sc-if value="{{ showToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1c1c1e;color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:500;z-index:70;box-shadow:0 12px 30px -8px rgba(0,0,0,.4);animation:toastin .25s ease;">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CART_KEY = 'moreseat_cart_items';
+
+class Component extends DCLogic {
+  state = { shop: null, cart: this.readCart(), toast: '', toastKey: 0, id: this.readId(), qty: 1, catMenu: false };
+
+  linkHover = { color: '#3a56c5' };
+  menuItemHover = { background: '#f4f6fb', color: '#3a56c5' };
+  cardHover = { opacity: 0.9 };
+  darkHover = { opacity: 0.88 };
+  ghostHover = { background: '#f6f7f9' };
+  kakaoHover = { filter: 'brightness(0.95)' };
+
+  readId() {
+    try { return parseInt(new URLSearchParams(location.search).get('id') || '0', 10) || 0; } catch (e) { return 0; }
+  }
+  readItems() {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { return []; }
+  }
+  readCart() { return this.readItems().reduce((a, i) => a + (i.qty || 0), 0); }
+  addToCart(id, name, n) {
+    const items = this.readItems();
+    const ex = items.find(i => i.id === id);
+    if (ex) ex.qty += n; else items.push({ id: id, qty: n });
+    try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch (e) {}
+    this.setState(s => ({ cart: this.readCart(), toast: name + ' ' + n + '개 담김', toastKey: s.toastKey + 1 }));
+    clearTimeout(this._t);
+    const k = this.state.toastKey + 1;
+    this._t = setTimeout(() => { if (this.state.toastKey === k) this.setState({ toast: '' }); }, 1800);
+  }
+
+  componentDidMount() {
+    import('./shop-data.js').then(m => { this.setState({ shop: (m && (m.SHOP || m.default)) || window.SHOP }); })
+      .catch(() => { if (window.SHOP) this.setState({ shop: window.SHOP }); });
+  }
+
+  won(n) { return (Number(n) || 0).toLocaleString('ko-KR'); }
+  stars(r) { return '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r); }
+
+  renderVals() {
+    const shop = this.state.shop;
+    const base = {
+      linkHover: this.linkHover, cardHover: this.cardHover, darkHover: this.darkHover,
+      ghostHover: this.ghostHover, kakaoHover: this.kakaoHover,
+      cart: this.state.cart, toast: this.state.toast, showToast: !!this.state.toast,
+      qty: this.state.qty,
+      catMenu: this.state.catMenu, menuItemHover: this.menuItemHover,
+      menuCats: (shop ? shop.categories.map(c => ({ name: c.name, count: shop.products.filter(p => p.catSlug === c.slug).length, href: 'category.dc.html?cat=' + c.slug })) : []),
+      openMenu: () => this.setState({ catMenu: true }),
+      closeMenu: () => this.setState({ catMenu: false }),
+    };
+    if (!shop) return { ...base, found: true, notFound: false, p: {}, related: [], prodReviews: [], hasReviews: false, noReviews: false };
+
+    const catName = {};
+    shop.categories.forEach(c => { catName[c.slug] = c.name; });
+    const prod = shop.products.find(x => x.id === this.state.id);
+    if (!prod) return { ...base, found: false, notFound: true, p: {}, related: [], prodReviews: [], hasReviews: false, noReviews: false };
+
+    const p = {
+      ...prod, priceFmt: this.won(prod.price), catName: catName[prod.catSlug] || '', hasBadge: !!prod.badge,
+    };
+    const related = shop.products.filter(x => x.catSlug === prod.catSlug && x.id !== prod.id).slice(0, 4)
+      .map(x => ({ ...x, priceFmt: this.won(x.price), href: 'product.dc.html?id=' + x.id }));
+    const prodReviews = shop.reviews.filter(r => r.productId === prod.id).slice(0, 4)
+      .map(r => ({ ...r, stars: this.stars(r.rating) }));
+
+    return {
+      ...base, found: true, notFound: false, p,
+      catHref: 'category.dc.html?cat=' + prod.catSlug,
+      stockLabel: prod.stock > 0 ? ('재고 ' + prod.stock + '개') : '품절',
+      stockColor: prod.stock > 10 ? '#1f8a5b' : (prod.stock > 0 ? '#c98a1f' : '#d84040'),
+      related, prodReviews, hasReviews: prodReviews.length > 0, noReviews: prodReviews.length === 0,
+      inc: () => this.setState(s => ({ qty: s.qty + 1 })),
+      dec: () => this.setState(s => ({ qty: Math.max(1, s.qty - 1) })),
+      addQty: () => this.addToCart(prod.id, prod.name, this.state.qty),
+    };
+  }
+}
+</script>
+</body>
+</html>

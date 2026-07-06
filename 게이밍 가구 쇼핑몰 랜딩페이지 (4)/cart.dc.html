@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#ffffff; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  ::selection { background:#dbe4ff; }
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; }
+</style>
+</helmet>
+
+<div id="top" style="min-height:100vh;display:flex;flex-direction:column;">
+
+  <!-- NAV -->
+  <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
+    <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
+      <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
+        <a href="index.html#category" style-hover="{{ linkHover }}">카테고리</a>
+        <a href="index.html#products" style-hover="{{ linkHover }}">인기제품</a>
+        <a href="reviews.dc.html" style-hover="{{ linkHover }}">후기</a>
+        <a href="support.dc.html?page=faq" style-hover="{{ linkHover }}">고객지원</a>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#3a56c5;">
+        <span>장바구니</span>
+        <span style="min-width:22px;height:22px;padding:0 6px;background:#3a56c5;color:#fff;border-radius:999px;font-size:12px;display:flex;align-items:center;justify-content:center;">{{ count }}</span>
+      </div>
+    </nav>
+  </header>
+
+  <section style="max-width:1080px;margin:0 auto;width:100%;padding:36px 28px 80px;flex:1;">
+    <h1 style="font-weight:800;font-size:clamp(26px,3.4vw,34px);letter-spacing:-.02em;margin-bottom:28px;">장바구니</h1>
+
+    <!-- EMPTY -->
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px solid #eceef1;border-radius:16px;padding:72px 28px;text-align:center;">
+        <div style="font-size:17px;font-weight:700;margin-bottom:8px;">장바구니가 비어 있습니다</div>
+        <p style="font-size:14px;color:#8a8d94;margin-bottom:24px;">마음에 드는 제품을 담아보세요.</p>
+        <a href="category.dc.html?cat=all" style="display:inline-block;background:#1c1c1e;color:#fff;font-weight:700;font-size:14px;padding:13px 28px;border-radius:9px;">제품 보러 가기</a>
+      </div>
+    </sc-if>
+
+    <!-- ITEMS -->
+    <sc-if value="{{ hasItems }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+            <div style="display:flex;gap:16px;border:1px solid #eceef1;border-radius:14px;padding:16px;align-items:center;">
+              <a href="{{ it.href }}" style="width:88px;height:88px;border-radius:10px;overflow:hidden;flex:none;background:#f2f3f5;">
+                <img src="{{ it.photo }}" alt="{{ it.name }}" style="width:100%;height:100%;object-fit:cover;" />
+              </a>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:12px;color:#3a56c5;font-weight:600;">{{ it.catName }}</div>
+                <a href="{{ it.href }}" style="font-weight:700;font-size:16px;display:block;margin-top:3px;" style-hover="{{ linkHover }}">{{ it.name }}</a>
+                <div style="font-weight:800;font-size:17px;margin-top:8px;">₩{{ it.lineFmt }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+                <button onClick="{{ it.remove }}" style="background:none;border:none;color:#a9adb6;font-size:13px;cursor:pointer;">삭제</button>
+                <div style="display:flex;align-items:center;border:1px solid #dcdee3;border-radius:8px;overflow:hidden;">
+                  <button onClick="{{ it.dec }}" style="width:34px;height:36px;border:none;background:#fff;font-size:16px;cursor:pointer;color:#55555c;">−</button>
+                  <span style="width:40px;text-align:center;font-weight:700;font-size:14px;">{{ it.qty }}</span>
+                  <button onClick="{{ it.inc }}" style="width:34px;height:36px;border:none;background:#fff;font-size:16px;cursor:pointer;color:#55555c;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+          <button onClick="{{ clearAll }}" style="align-self:flex-start;background:none;border:none;color:#9a9aa0;font-size:13px;cursor:pointer;margin-top:4px;">장바구니 비우기</button>
+        </div>
+
+        <!-- SUMMARY -->
+        <div style="border:1px solid #eceef1;border-radius:16px;padding:24px;position:sticky;top:100px;">
+          <div style="font-size:16px;font-weight:700;margin-bottom:18px;">주문 요약</div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;color:#55575d;margin-bottom:10px;"><span>상품 금액</span><span style="font-weight:600;color:#1c1c1e;">₩{{ subtotalFmt }}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;color:#55575d;margin-bottom:10px;"><span>배송비</span><span style="font-weight:600;color:#1f8a5b;">무료</span></div>
+          <div style="border-top:1px solid #eceef1;margin:16px 0;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;"><span style="font-size:15px;font-weight:700;">총 결제금액</span><span style="font-size:24px;font-weight:800;">₩{{ subtotalFmt }}</span></div>
+          <button onClick="{{ openCheckout }}" style="display:block;width:100%;text-align:center;background:#1c1c1e;color:#fff;font-weight:700;font-size:16px;padding:15px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;" style-hover="{{ darkHover }}">카드로 결제하기</button>
+          <a href="category.dc.html?cat=all" style="display:block;text-align:center;border:1px solid #dcdee3;color:#3a3c42;font-weight:600;font-size:14px;padding:13px;border-radius:10px;margin-top:10px;" style-hover="{{ ghostHover }}">계속 쇼핑하기</a>
+          <div style="font-size:12px;color:#9a9aa0;margin-top:16px;line-height:1.8;text-align:center;">전국 무료배송 · A/S 3년 무상 · 100일 체험</div>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+
+  <sc-if value="{{ checkoutOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;">
+      <div style="background:#fff;border-radius:16px;padding:28px;max-width:400px;width:100%;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);">
+        <div style="font-size:18px;font-weight:800;letter-spacing:-.02em;">주문자 정보</div>
+        <div style="font-size:13px;color:#8a8d94;margin-top:6px;">카드 결제를 위해 주문자 정보를 입력해주세요.</div>
+        <div style="margin-top:18px;">
+          <label style="font-size:13px;font-weight:600;color:#55575d;">이름</label>
+          <input value="{{ ordNm }}" onInput="{{ onName }}" placeholder="홍길동" style="width:100%;margin-top:6px;padding:12px;border:1px solid #dcdee3;border-radius:9px;font-size:15px;font-family:inherit;box-sizing:border-box;" />
+        </div>
+        <div style="margin-top:14px;">
+          <label style="font-size:13px;font-weight:600;color:#55575d;">이메일</label>
+          <input value="{{ email }}" onInput="{{ onEmail }}" placeholder="you@example.com" style="width:100%;margin-top:6px;padding:12px;border:1px solid #dcdee3;border-radius:9px;font-size:15px;font-family:inherit;box-sizing:border-box;" />
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;padding-top:16px;border-top:1px solid #eceef1;">
+          <span style="font-size:14px;font-weight:700;">결제금액</span>
+          <span style="font-size:20px;font-weight:800;">₩{{ subtotalFmt }}</span>
+        </div>
+        <sc-if value="{{ payMsg }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;font-size:13px;color:#d64545;line-height:1.5;">{{ payMsg }}</div>
+        </sc-if>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <button onClick="{{ closeCheckout }}" style="flex:1;padding:13px;border-radius:10px;border:1px solid #dcdee3;background:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;">취소</button>
+          <button onClick="{{ startPayment }}" style="flex:2;padding:13px;border-radius:10px;border:none;background:#1c1c1e;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;">{{ payBtnLabel }}</button>
+        </div>
+        <div style="font-size:11.5px;color:#b3b6bd;margin-top:12px;text-align:center;line-height:1.6;">신용카드 · 윈글로벌페이 안전결제</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <footer style="background:#2a2a2d;color:#a2a2a8;">
+    <div style="max-width:1280px;margin:0 auto;padding:34px 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;">
+      <div style="font-weight:800;font-size:20px;letter-spacing:.12em;color:#fff;">MORESEAT</div>
+      <div style="font-size:12.5px;color:#8a8a90;">대한매니지먼트(주) · 사업자등록번호 129-86-45068</div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CART_KEY = 'moreseat_cart_items';
+
+class Component extends DCLogic {
+  state = { shop: null, items: this.readItems(), checkoutOpen: false, ordNm: '', email: '', paying: false, payMsg: '' };
+
+  linkHover = { color: '#3a56c5' };
+  darkHover = { opacity: 0.88 };
+  ghostHover = { background: '#f6f7f9' };
+
+  readItems() {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { return []; }
+  }
+  save(items) {
+    try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch (e) {}
+    this.setState({ items });
+  }
+  changeQty(id, delta) {
+    let items = this.state.items.map(i => i.id === id ? { ...i, qty: i.qty + delta } : i).filter(i => i.qty > 0);
+    this.save(items);
+  }
+  removeItem(id) { this.save(this.state.items.filter(i => i.id !== id)); }
+  clearAll() { this.save([]); }
+
+  openCheckout() {
+    if (this.state.items.length === 0) return;
+    this.setState({ checkoutOpen: true, payMsg: '', paying: false });
+  }
+  closeCheckout() {
+    if (this.state.paying) return;
+    this.setState({ checkoutOpen: false });
+  }
+
+  async startPayment() {
+    const ordNm = this.state.ordNm.trim();
+    const email = this.state.email.trim();
+    if (!ordNm || !email) { this.setState({ payMsg: '이름과 이메일을 입력해주세요.' }); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { this.setState({ payMsg: '유효한 이메일 주소를 입력해주세요.' }); return; }
+
+    const shop = this.state.shop;
+    if (!shop) { this.setState({ payMsg: '상품 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.' }); return; }
+
+    let subtotal = 0; let names = []; let itemsPayload = [];
+    this.state.items.forEach(ci => {
+      const p = shop.products.find(x => x.id === ci.id);
+      if (p) { subtotal += p.price * ci.qty; names.push(p.name); itemsPayload.push({ id: p.id, qty: ci.qty }); }
+    });
+    if (subtotal <= 0) { this.setState({ payMsg: '결제할 상품이 없습니다.' }); return; }
+    const goodsName = names.length > 1 ? `${names[0]} 외 ${names.length - 1}건` : names[0];
+
+    this.setState({ paying: true, payMsg: '' });
+
+    try {
+      const res = await fetch('/.netlify/functions/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: itemsPayload, goodsName, ordNm, email }),
+      });
+      const data = await res.json();
+      if (!data.success) { this.setState({ paying: false, payMsg: data.message || '결제 요청에 실패했습니다.' }); return; }
+
+      const w = 700, h = 1000;
+      const left = (window.screen.width - w) / 2, top = (window.screen.height - h) / 2;
+      const pop = window.open(data.paymentUrl, 'WinPayWindow', `width=${w},height=${h},left=${left},top=${top},scrollbars=yes`);
+      if (!pop || pop.closed) { this.setState({ paying: false, payMsg: '팝업이 차단되었습니다. 팝업 차단을 해제해주세요.' }); return; }
+
+      const onMsg = (e) => {
+        if (e.data && e.data.type === 'WINPAY_RESULT') {
+          window.removeEventListener('message', onMsg);
+          clearInterval(timer);
+          this.finishPayment(e.data);
+        }
+      };
+      window.addEventListener('message', onMsg);
+      const timer = setInterval(() => {
+        if (pop.closed) { clearInterval(timer); window.removeEventListener('message', onMsg); this.checkStatus(data.tid); }
+      }, 1000);
+    } catch (err) {
+      this.setState({ paying: false, payMsg: '결제 서버에 연결할 수 없습니다. (Netlify 배포 환경에서만 동작합니다)' });
+    }
+  }
+
+  finishPayment(r) {
+    if (r && r.success) {
+      this.clearAll();
+      const q = 'success=true&tid=' + encodeURIComponent(r.tid || '') + '&message=' + encodeURIComponent(r.message || '결제가 완료되었습니다.');
+      window.location.href = 'order-complete.html?' + q;
+    } else {
+      this.setState({ paying: false, payMsg: (r && r.message) || '결제가 취소되었거나 완료되지 않았습니다.' });
+    }
+  }
+
+  async checkStatus(tid) {
+    try {
+      const res = await fetch('/.netlify/functions/payment-status?tid=' + encodeURIComponent(tid));
+      const d = await res.json();
+      if (d && d.success) { this.finishPayment({ success: true, tid, message: '결제가 완료되었습니다.' }); }
+      else { this.setState({ paying: false, payMsg: '결제가 완료되지 않았습니다. 다시 시도해주세요.' }); }
+    } catch (e) {
+      this.setState({ paying: false, payMsg: '결제 결과를 확인하지 못했습니다.' });
+    }
+  }
+
+  componentDidMount() {
+    import('./shop-data.js').then(m => { this.setState({ shop: (m && (m.SHOP || m.default)) || window.SHOP }); })
+      .catch(() => { if (window.SHOP) this.setState({ shop: window.SHOP }); });
+  }
+
+  won(n) { return (Number(n) || 0).toLocaleString('ko-KR'); }
+
+  renderVals() {
+    const shop = this.state.shop;
+    const cartItems = this.state.items;
+    const count = cartItems.reduce((a, i) => a + i.qty, 0);
+
+    let items = [];
+    let subtotal = 0;
+    if (shop) {
+      const catName = {};
+      shop.categories.forEach(c => { catName[c.slug] = c.name; });
+      items = cartItems.map(ci => {
+        const p = shop.products.find(x => x.id === ci.id);
+        if (!p) return null;
+        const line = p.price * ci.qty;
+        subtotal += line;
+        return {
+          id: p.id, name: p.name, photo: p.photo, qty: ci.qty,
+          catName: catName[p.catSlug] || '', lineFmt: this.won(line),
+          href: 'product.dc.html?id=' + p.id,
+          inc: () => this.changeQty(p.id, 1), dec: () => this.changeQty(p.id, -1),
+          remove: () => this.removeItem(p.id),
+        };
+      }).filter(Boolean);
+    }
+
+    return {
+      linkHover: this.linkHover, darkHover: this.darkHover, ghostHover: this.ghostHover,
+      count, items, subtotalFmt: this.won(subtotal),
+      isEmpty: count === 0, hasItems: count > 0,
+      clearAll: () => this.clearAll(),
+      checkoutOpen: this.state.checkoutOpen,
+      ordNm: this.state.ordNm, email: this.state.email,
+      payMsg: this.state.payMsg,
+      payBtnLabel: this.state.paying ? '처리 중…' : '결제하기',
+      openCheckout: () => this.openCheckout(),
+      closeCheckout: () => this.closeCheckout(),
+      startPayment: () => this.startPayment(),
+      onName: (e) => this.setState({ ordNm: e.target.value }),
+      onEmail: (e) => this.setState({ email: e.target.value }),
+    };
+  }
+}
+</script>
+</body>
+</html>

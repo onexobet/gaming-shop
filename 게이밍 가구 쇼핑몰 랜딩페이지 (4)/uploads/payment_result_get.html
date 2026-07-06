@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 결과</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+        
+        .header.failed {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        .status-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .status-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .status-message {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 25px 20px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .result-value {
+            color: #333;
+            font-size: 14px;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-all;
+        }
+        
+        .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .buttons {
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-details {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .error-code {
+            font-family: monospace;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        .debug-info {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 로딩 상태 -->
+        <div id="loadingSection" class="loading">
+            <div class="spinner"></div>
+            <p>결제 결과를 처리중입니다...</p>
+        </div>
+        
+        <!-- 결제 성공 -->
+        <div id="successSection" style="display: none;">
+            <div class="header success">
+                <div class="status-icon">✅</div>
+                <div class="status-title">결제 완료</div>
+                <div class="status-message">결제가 성공적으로 완료되었습니다</div>
+            </div>
+            
+            <div class="content">
+                <div class="result-item">
+                    <span class="result-label">주문번호</span>
+                    <span class="result-value" id="successTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">결제금액</span>
+                    <span class="result-value amount" id="successAmount">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">상품명</span>
+                    <span class="result-value" id="successGoodsName">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">주문자</span>
+                    <span class="result-value" id="successOrdNm">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">결제일시</span>
+                    <span class="result-value" id="successAppDtm">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">윈글로벌페이 거래 키</span>
+                    <span class="result-value" id="successWTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">결제수단</span>
+                    <span class="result-value" id="successVan">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">발행사</span>
+                    <span class="result-value" id="successIssuer">-</span>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="goHome()">홈으로 돌아가기</button>
+            </div>
+        </div>
+        
+        <!-- 결제 실패 -->
+        <div id="failedSection" style="display: none;">
+            <div class="header failed">
+                <div class="status-icon">❌</div>
+                <div class="status-title">결제 실패</div>
+                <div class="status-message">결제 처리 중 오류가 발생했습니다</div>
+            </div>
+            
+            <div class="content">
+                <div class="result-item">
+                    <span class="result-label">주문번호</span>
+                    <span class="result-value" id="failedTid">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">실패 사유</span>
+                    <span class="result-value" id="failedMessage">-</span>
+                </div>
+                
+                <div class="error-details">
+                    <div class="error-code" id="errorDetails">오류 정보를 확인중입니다...</div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="retryPayment()">다시 결제하기</button>
+                <button class="btn btn-secondary" onclick="goHome()">홈으로 돌아가기</button>
+            </div>
+        </div>
+        
+        <!-- 데이터 없음 오류 -->
+        <div id="errorSection" style="display: none;">
+            <div class="header failed">
+                <div class="status-icon">⚠️</div>
+                <div class="status-title">오류 발생</div>
+                <div class="status-message">결제 데이터를 받을 수 없습니다</div>
+            </div>
+            
+            <div class="content">
+                <div class="result-item">
+                    <span class="result-label">오류 내용</span>
+                    <span class="result-value" id="errorMessage">-</span>
+                </div>
+                
+                <div class="error-details">
+                    <div class="error-code">URL 파라미터에서 결제 정보를 찾을 수 없습니다.</div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="goHome()">홈으로 돌아가기</button>
+            </div>
+        </div>
+        
+        <!-- 디버그 정보 (개발용) -->
+        <div id="debugSection" class="debug-info" style="display: block;">
+            <strong>디버그 정보:</strong>
+            <pre id="debugContent">로딩 중...</pre>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let paymentResult = null;
+        
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('💳 GET 파라미터 결제 결과 페이지 로드');
+            console.log('URL:', window.location.href);
+            console.log('Query params:', window.location.search);
+            
+            // URL 파라미터에서 결제 데이터 추출
+            processUrlParameters();
+        });
+        
+        /**
+         * URL 파라미터에서 결제 데이터 처리
+         */
+        function processUrlParameters() {
+            console.log('🔍 URL 파라미터에서 결제 데이터 추출 시작');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 모든 파라미터 로깅
+            console.log('📋 모든 URL 파라미터:');
+            for (const [key, value] of urlParams.entries()) {
+                console.log(`  ${key}: ${value}`);
+            }
+            
+            // paymentData 파라미터에서 JSON 추출
+            const paymentDataParam = urlParams.get('paymentData');
+            
+            if (paymentDataParam) {
+                console.log('✅ paymentData 파라미터 발견');
+                console.log('Raw JSON 문자열:', paymentDataParam);
+                
+                try {
+                    // URL 디코딩 후 JSON 파싱
+                    const decodedJson = decodeURIComponent(paymentDataParam);
+                    console.log('디코딩된 JSON:', decodedJson);
+                    
+                    const paymentData = JSON.parse(decodedJson);
+                    console.log('📊 파싱된 JSON 데이터:', paymentData);
+                    
+                    // 디버그 정보 표시
+                    showDebugInfo(paymentData, decodedJson);
+                    
+                    // 결제 결과 처리
+                    handlePaymentResult(paymentData);
+                    
+                } catch (e) {
+                    console.error('❌ JSON 파싱 오류:', e);
+                    console.error('파싱 실패한 문자열:', paymentDataParam);
+                    showError('JSON 데이터 파싱 오류: ' + e.message);
+                    showDebugInfo({ error: e.message }, paymentDataParam);
+                }
+            } else {
+                console.log('❌ paymentData 파라미터 없음');
+                
+                // 다른 방식으로 전달된 개별 파라미터들 확인
+                const individualParams = extractIndividualParams(urlParams);
+                if (individualParams) {
+                    console.log('📋 개별 파라미터로 데이터 구성');
+                    handlePaymentResult(individualParams);
+                    showDebugInfo(individualParams, '개별 파라미터에서 구성');
+                } else {
+                    showError('결제 데이터가 URL 파라미터에 없습니다.');
+                    showDebugInfo({ error: 'No payment data found' }, 'No parameters');
+                }
+            }
+            
+            // 로딩 숨김
+            hideLoading();
+        }
+        
+        /**
+         * 개별 URL 파라미터에서 결제 데이터 구성 (fallback)
+         */
+        function extractIndividualParams(urlParams) {
+            const success = urlParams.get('success');
+            const tid = urlParams.get('tid');
+            const message = urlParams.get('message');
+            
+            if (success !== null || tid || message) {
+                return {
+                    success: success === 'true',
+                    tid: tid || '',
+                    message: decodeURIComponent(message || ''),
+                    wTid: urlParams.get('wTid') || '',
+                    amt: urlParams.get('amt') || '',
+                    goodsName: decodeURIComponent(urlParams.get('goodsName') || ''),
+                    ordNm: decodeURIComponent(urlParams.get('ordNm') || ''),
+                    appDtm: urlParams.get('appDtm') || '',
+                    van: urlParams.get('van') || '',
+                    issuer: urlParams.get('issuer') || ''
+                };
+            }
+            return null;
+        }
+        
+        /**
+         * 결제 결과 데이터 처리
+         */
+        function handlePaymentResult(data) {
+            paymentResult = data;
+            
+            console.log('💳 결제 결과 처리:', data);
+            
+            // success 필드로 성공/실패 판단
+            if (data.success === true) {
+                console.log('✅ 결제 성공 처리');
+                showSuccessResult(data);
+            } else {
+                console.log('❌ 결제 실패 처리');
+                showFailedResult(data);
+            }
+        }
+        
+        /**
+         * 성공 결과 표시
+         */
+        function showSuccessResult(data) {
+            // 데이터 바인딩
+            document.getElementById('successTid').textContent = data.tid || '정보 없음';
+            document.getElementById('successAmount').textContent = formatAmount(data.amt) + '원';
+            document.getElementById('successGoodsName').textContent = data.goodsName || '상품명 없음';
+            document.getElementById('successOrdNm').textContent = data.ordNm || '주문자 없음';
+            document.getElementById('successAppDtm').textContent = formatDateTime(data.appDtm);
+            document.getElementById('successWTid').textContent = data.wTid || '거래번호 없음';
+            document.getElementById('successVan').textContent = getVanName(data.van);
+            document.getElementById('successIssuer').textContent = getIssuerName(data.issuer);
+            
+            // 성공 섹션 표시
+            document.getElementById('successSection').style.display = 'block';
+        }
+        
+        /**
+         * 실패 결과 표시
+         */
+        function showFailedResult(data) {
+            // 데이터 바인딩
+            document.getElementById('failedTid').textContent = data.tid || '주문번호 없음';
+            document.getElementById('failedMessage').textContent = data.message || '알 수 없는 오류';
+            
+            // 오류 상세 정보
+            const errorDetails = `
+                TID: ${data.tid || 'N/A'}
+                메시지: ${data.message || 'N/A'}
+                시간: ${new Date().toLocaleString()}
+            `.trim();
+            document.getElementById('errorDetails').textContent = errorDetails;
+            
+            // 실패 섹션 표시
+            document.getElementById('failedSection').style.display = 'block';
+        }
+        
+        /**
+         * 오류 표시
+         */
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorSection').style.display = 'block';
+        }
+        
+        /**
+         * 로딩 숨김
+         */
+        function hideLoading() {
+            document.getElementById('loadingSection').style.display = 'none';
+        }
+        
+        /**
+         * 디버그 정보 표시 (개발용)
+         */
+        function showDebugInfo(data, rawData) {
+            const debugContent = document.getElementById('debugContent');
+            const debugSection = document.getElementById('debugSection');
+            
+            if (debugContent && debugSection) {
+                const debugInfo = {
+                    '현재 URL': window.location.href,
+                    '파싱된 데이터': data,
+                    '원본 데이터': rawData,
+                    '처리 시간': new Date().toLocaleString()
+                };
+                
+                debugContent.textContent = JSON.stringify(debugInfo, null, 2);
+                debugSection.style.display = 'block';
+            }
+        }
+        
+        /**
+         * 유틸리티 함수들
+         */
+        function formatAmount(amount) {
+            if (!amount) return '0';
+            return parseInt(amount).toLocaleString();
+        }
+        
+        function formatDateTime(dtm) {
+            if (!dtm || dtm.length !== 14) return '시간 정보 없음';
+            
+            const year = dtm.substring(0, 4);
+            const month = dtm.substring(4, 6);
+            const day = dtm.substring(6, 8);
+            const hour = dtm.substring(8, 10);
+            const minute = dtm.substring(10, 12);
+            const second = dtm.substring(12, 14);
+            
+            return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        }
+        
+        function getVanName(van) {
+            const vanNames = {
+                'KIWOOM': '키움페이',
+                'BANKPAY': '계좌이체(뱅크페이)',
+                'HECTO': '헥토파이낸셜'
+            };
+            return vanNames[van] || van || '정보 없음';
+        }
+        
+        function getIssuerName(issuer) {
+            const bankNames = {
+                '002': '산업은행',
+                '003': '기업은행',
+                '004': '국민은행',
+                '007': '수협은행',
+                '011': '농협은행',
+                '020': '우리은행',
+                '023': 'SC제일은행',
+                '027': '한국씨티은행',
+                '088': '신한은행',
+                '089': '케이뱅크',
+                '090': '카카오뱅크'
+            };
+            return bankNames[issuer] || issuer || '정보 없음';
+        }
+        
+        /**
+         * 버튼 이벤트 핸들러들
+         */
+        function goHome() {
+            console.log('🏠 홈으로 이동');
+            window.location.href = 'payment_clientV3.6_내부용.html';
+        }
+        
+        function retryPayment() {
+            console.log('🔄 결제 재시도');
+            window.location.href = 'payment_clientV3.6_내부용.html';
+        }
+    </script>
+</body>
+</html>
