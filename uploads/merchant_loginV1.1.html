@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>윈글로벌페이 가맹점 로그인 V1.1</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        /* ===== 기본 스타일 ===== */
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f6f6f6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* ===== 폼 스타일 ===== */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .two-column {
+            display: flex;
+            gap: 10px;
+        }
+
+        .two-column .form-group {
+            flex: 1;
+        }
+
+        /* ===== 버튼 스타일 ===== */
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #1557b0;
+        }
+
+        .success-button {
+            background-color: #28a745;
+        }
+
+        .success-button:hover {
+            background-color: #218838;
+        }
+
+        .cancel-button {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+
+        .cancel-button:hover {
+            background-color: #5a6268;
+        }
+
+        .small-button {
+            width: auto;
+            margin: 10px 0 0 0;
+            float: right;
+        }
+
+        /* ===== 섹션 스타일 ===== */
+        .section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-info {
+            background-color: #e8f5e8;
+            border: 1px solid #c8e6c9;
+        }
+
+        .auth-step {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        /* ===== 선택 항목 스타일 ===== */
+        .selection-item {
+            margin-bottom: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        .selection-item:hover {
+            background-color: #e3f2fd;
+            border-color: #1a73e8;
+        }
+
+        .selection-item.active {
+            background-color: #e3f2fd;
+            border-color: #1a73e8;
+            color: #1a73e8;
+            font-weight: bold;
+        }
+
+        .info-display {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* ===== 로딩 및 메시지 ===== */
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #1a73e8;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>윈글로벌페이 가맹점 로그인 V1.1</h1>
+
+        <!-- 1단계: 가맹점 로그인 -->
+        <div id="loginSection" class="section">
+            <h3>🔐 가맹점 로그인</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="userId">아이디</label>
+                    <input type="text" id="userId" placeholder="가맹점 아이디">
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">패스워드</label>
+                    <input type="password" id="userPassword" placeholder="패스워드">
+                </div>
+            </div>
+            <button id="userLoginButton">로그인</button>
+        </div>
+
+        <!-- 2단계: 가맹점 정보 표시 -->
+        <div id="userInfoSection" class="user-info section hidden">
+            <h3>👤 가맹점 정보</h3>
+            <div class="user-info-detail">
+                <strong>가맹점명:</strong> <span id="userNameDisplay"></span><br>
+                <strong>가맹점ID:</strong> <span id="userIdDisplay"></span>
+            </div>
+            <button id="logoutButton" class="small-button">로그아웃</button>
+            <div style="clear: both;"></div>
+        </div>
+
+        <!-- 3단계: 결제수단 선택 -->
+        <div id="vanSelectionSection" class="section hidden">
+            <h3>💳 결제수단 선택</h3>
+            <div id="paymentMethods">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+
+        <!-- 4단계: TMN 선택 -->
+        <div id="tmnSelectionSection" class="section hidden">
+            <h3>🏪 터미널 선택</h3>
+            <div id="selectedVanInfo" class="info-display"></div>
+            <div class="form-group">
+                <label for="tmnSelect">사용할 터미널을 선택하세요</label>
+                <select id="tmnSelect">
+                    <option value="">터미널을 선택하세요</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 5단계: PayKey 입력 및 결제 페이지 이동 -->
+        <div id="payKeySection" class="auth-step section hidden">
+            <div id="selectedTmnInfo" class="info-display"></div>
+            <div class="form-group">
+                <label for="payKey">PayKey</label>
+                <input type="password" id="payKey" placeholder="터미널의 PayKey를 입력하세요">
+                <small style="color: #666;">선택한 터미널의 PayKey를 입력하여 결제 페이지로 이동합니다.</small>
+            </div>
+            <div class="two-column">
+                <button id="proceedToPaymentButton" class="success-button">결제 페이지로 이동</button>
+                <button id="cancelSelectionButton" class="cancel-button">취소</button>
+            </div>
+        </div>
+
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>요청 처리 중...</p>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // ===== 설정 및 전역 변수 =====
+        const CONFIG = {
+            SERVER_URL: 'https://jh.winglobalpay.com',
+            SESSION_KEYS: {
+                JWT_TOKEN: 'merchantJwtToken',
+                USER_DATA: 'merchantUser',
+                VAN_LIST: 'merchantVanList',
+                TMN_LIST: 'merchantTmnList'
+            }
+        };
+
+        const state = {
+            userJwtToken: '',
+            currentUser: null,
+            vanList: [],
+            tmnList: [],
+            selectedVan: null,
+            selectedTmn: null
+        };
+
+        // ===== 초기화 =====
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeApp();
+            bindEvents();
+        });
+
+        function initializeApp() {
+            // 세션에서 토큰 및 데이터 복원
+            restoreSession();
+            
+            if (state.userJwtToken && state.currentUser) {
+                updateUIAfterLogin();
+            }
+        }
+
+        function bindEvents() {
+            document.getElementById('userLoginButton').addEventListener('click', handleUserLogin);
+            document.getElementById('logoutButton').addEventListener('click', handleLogout);
+            document.getElementById('proceedToPaymentButton').addEventListener('click', handleProceedToPayment);
+            document.getElementById('cancelSelectionButton').addEventListener('click', handleCancelSelection);
+            document.getElementById('tmnSelect')	// 드롭다운
+						.addEventListener('change', handleTmnSelect);	// 값이 바뀌면 실행
+        }
+
+        // ===== 세션 관리 =====
+        function saveSession() {
+            sessionStorage.setItem(CONFIG.SESSION_KEYS.JWT_TOKEN, state.userJwtToken);
+            sessionStorage.setItem(CONFIG.SESSION_KEYS.USER_DATA, JSON.stringify(state.currentUser));
+            sessionStorage.setItem(CONFIG.SESSION_KEYS.VAN_LIST, JSON.stringify(state.vanList));
+            sessionStorage.setItem(CONFIG.SESSION_KEYS.TMN_LIST, JSON.stringify(state.tmnList));
+        }
+
+        function restoreSession() {
+            state.userJwtToken = sessionStorage.getItem(CONFIG.SESSION_KEYS.JWT_TOKEN) || '';
+            
+            const savedUser = sessionStorage.getItem(CONFIG.SESSION_KEYS.USER_DATA);
+            const savedVanList = sessionStorage.getItem(CONFIG.SESSION_KEYS.VAN_LIST);
+            const savedTmnList = sessionStorage.getItem(CONFIG.SESSION_KEYS.TMN_LIST);
+            
+            if (savedUser && savedVanList && savedTmnList) {
+                state.currentUser = JSON.parse(savedUser);
+                state.vanList = JSON.parse(savedVanList);
+                state.tmnList = JSON.parse(savedTmnList);
+            }
+        }
+
+        function clearSession() {
+            Object.values(CONFIG.SESSION_KEYS).forEach(key => {
+                sessionStorage.removeItem(key);
+            });
+            
+            state.userJwtToken = '';
+            state.currentUser = null;
+            state.vanList = [];
+            state.tmnList = [];
+            state.selectedVan = null;
+            state.selectedTmn = null;
+        }
+
+        // ===== 이벤트 핸들러 =====
+        function handleUserLogin() {
+            const userId = document.getElementById('userId').value.trim();
+            const password = document.getElementById('userPassword').value.trim();
+
+            if (!userId || !password) {
+                showErrorMessage('아이디와 패스워드를 입력해주세요.');
+                return;
+            }
+
+            performUserLogin(userId, password);
+        }
+
+        function handleLogout() {
+            clearSession();
+            resetUI();
+            showSuccessMessage('로그아웃되었습니다.');
+        }
+
+        function handleProceedToPayment() {
+            const payKey = document.getElementById('payKey').value.trim();
+
+            if (!payKey) {
+                showErrorMessage('PayKey를 입력해주세요.');
+                return;
+            }
+
+            if (!state.selectedVan || !state.selectedTmn) {
+                showErrorMessage('VAN과 터미널을 선택해주세요.');
+                return;
+            }
+
+            authenticateAndProceed(payKey);
+        }
+
+        function handleCancelSelection() {
+            document.getElementById('payKeySection').classList.add('hidden');
+            document.getElementById('payKey').value = '';
+            state.selectedTmn = null;
+            document.getElementById('tmnSelect').selectedIndex = 0;
+        }
+
+        function handleTmnSelect() {
+            const tmnSelect = document.getElementById('tmnSelect');
+            const selectedOption = tmnSelect.options[tmnSelect.selectedIndex];
+            
+            if (!selectedOption.value) {
+                document.getElementById('payKeySection').classList.add('hidden');
+                state.selectedTmn = null;
+                return;
+            }
+
+            state.selectedTmn = JSON.parse(selectedOption.getAttribute('data-tmn-data'));
+            showPayKeySection();
+        }
+		
+		function showPayKeySection() {
+           showSection('payKeySection', true);
+           document.getElementById('selectedTmnInfo').innerHTML = `
+               <strong>선택된 터미널:</strong> ${state.selectedTmn.tmnId}<br>
+               <strong>결제수단:</strong> ${state.selectedVan.name}
+           `;
+           document.getElementById('payKey').focus();
+       }
+
+       
+        function performUserLogin(userId, password) {
+            showLoader(true);
+            clearMessages();
+
+            fetch(`${CONFIG.SERVER_URL}/api/auth/user-login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: userId, password: password })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        throw new Error(error.message || '로그인에 실패했습니다.');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                showLoader(false);
+                
+                if (data.token) {
+                    state.userJwtToken = data.token;
+                    state.currentUser = {
+                        userId: data.userId,
+                        userName: data.userName,
+                        parentId: data.parentId
+                    };
+                    state.vanList = data.vanList || [];
+                    state.tmnList = data.tmnList || [];
+                    
+                    saveSession();
+                    updateUIAfterLogin();
+                    showSuccessMessage('로그인이 성공했습니다!');
+                } else {
+                    showErrorMessage('로그인 응답이 올바르지 않습니다.');
+                }
+            })
+            .catch(error => {
+                showLoader(false);
+                showErrorMessage(`로그인 오류: ${error.message}`);
+            });
+        }
+
+        function authenticateAndProceed(payKey) {
+            showLoader(true);
+
+            fetch(`${CONFIG.SERVER_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${payKey}`
+                },
+                body: JSON.stringify({ tmnId: state.selectedTmn.tmnId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoader(false);
+				console.log('tmnid: ', state.selectedTmn.tmnId);
+                
+                if (data.token) {
+                    // 세션 토큰 생성 (브라우저에서)
+                    const sessionToken = generateSessionToken();
+                    
+                    // 세션 스토리지에 결제 정보 저장
+                    sessionStorage.setItem(sessionToken, JSON.stringify({
+                        tmnId: state.selectedTmn.tmnId,
+                        
+                        vanInfo: state.selectedVan,
+                        tmnInfo: state.selectedTmn,
+                        jwtToken: data.token,
+                        timestamp: Date.now()
+                    }));
+                    
+                    // 결제 페이지로 이동
+                    window.location.href = `payment_clientV3.6.html?session=${sessionToken}`;
+                } else {
+                    showErrorMessage('인증에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                showLoader(false);
+                showErrorMessage('인증 오류: ' + error.message);
+            });
+        }
+
+        // UI
+        function updateUIAfterLogin() {
+            showSection('loginSection', false);
+			
+            showSection('userInfoSection', true);
+            document.getElementById('userNameDisplay').textContent = state.currentUser.userName;
+            document.getElementById('userIdDisplay').textContent = state.currentUser.userId;
+			
+			showSection('vanSelectionSection', true);		// 결제수단 - 처음에는 vanlist를 했으나 결제수단으로 변경
+            createVanList();
+        }
+
+        function resetUI() {
+            showSection('loginSection', true);
+            showSection('userInfoSection', false);
+            showSection('vanSelectionSection', false);
+            showSection('tmnSelectionSection', false);
+            showSection('payKeySection', false);
+            
+            // 입력값 초기화
+            document.getElementById('userId').value = '';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('payKey').value = '';
+            
+            // 선택 항목 초기화
+            document.querySelectorAll('.selection-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            clearMessages();
+        }
+
+        function createVanList() {
+            const container = document.getElementById('paymentMethods');
+            container.innerHTML = '';
+
+            if (state.vanList.length === 0) {
+                container.innerHTML = '<p style="color: #666;">사용 가능한 결제수단이 없습니다.</p>';
+                return;
+            }
+
+            state.vanList.forEach((van) => {
+                const element = document.createElement('div');
+                element.className = 'selection-item';
+                element.setAttribute('data-van-idx', van.idx);
+                element.innerHTML = `<div><strong>${van.name}</strong></div>`;
+                element.addEventListener('click', () => selectVan(van));
+                container.appendChild(element);
+            });
+        }
+
+        function selectVan(van) {
+            // 기존 선택 해제
+            document.querySelectorAll('.selection-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+           
+            document.querySelector(`[data-van-idx="${van.idx}"]`).classList.add('active');
+            state.selectedVan = van;
+            
+            showSection('tmnSelectionSection', true);
+            showSection('payKeySection', false);
+            
+            document.getElementById('selectedVanInfo').innerHTML = `${van.name}<br>`;
+            createTmnList(van.idx);
+            state.selectedTmn = null;
+        }
+
+        function createTmnList(vanIdx) {
+            const select = document.getElementById('tmnSelect');
+            select.innerHTML = '<option value="">터미널을 선택하세요</option>';
+            
+            const vanTmnList = state.tmnList.filter(tmn => tmn.vanIdx === vanIdx);
+            
+            if (vanTmnList.length === 0) {
+                select.innerHTML = '<option value="">사용 가능한 터미널이 없습니다</option>';
+                return;
+            }
+
+            vanTmnList.forEach((tmn) => {
+                const option = document.createElement('option');
+                option.value = tmn.tmnId;
+                option.textContent = tmn.tmnId;
+                option.setAttribute('data-tmn-data', JSON.stringify(tmn));
+                select.appendChild(option);
+            });
+        }
+
+       
+
+        // ===== 유틸리티 함수 =====
+        function showSection(sectionId, show) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('hidden', !show);
+            }
+        }
+
+        function showLoader(show) {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.style.display = show ? 'block' : 'none';
+            }
+        }
+
+        function showErrorMessage(message) {
+            const result = document.getElementById('result');
+            if (result) {
+                result.innerHTML = `<div class="error">${message}</div>`;
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const result = document.getElementById('result');
+            if (result) {
+                result.innerHTML = `<div class="success">${message}</div>`;
+            }
+        }
+
+        function clearMessages() {
+            const result = document.getElementById('result');
+            if (result) {
+                result.innerHTML = '';
+            }
+        }
+
+        function generateSessionToken() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+    </script>
+</body>
+</html>

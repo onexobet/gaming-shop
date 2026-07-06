@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 취소 테스트</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f6f6f6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        button.danger {
+            background-color: #d32f2f;
+        }
+        button.danger:hover {
+            background-color: #b71c1c;
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+        .success {
+            color: green;
+            margin-top: 20px;
+        }
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #1a73e8;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .auth-status {
+            background-color: #f3f3f3;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .auth-status .status {
+            font-weight: bold;
+        }
+        .auth-status .status.logged-in {
+            color: green;
+        }
+        .auth-status .status.logged-out {
+            color: red;
+        }
+        .payment-info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .payment-details {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .detail-item {
+            width: 50%;
+            padding: 5px 0;
+            box-sizing: border-box;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>결제 취소</h1>
+
+    <div class="auth-status">
+        <div>
+            <span class="status logged-out" id="authStatus">로그인 필요</span>
+        </div>
+        <button id="loginButton" style="width: auto; margin: 0;">로그인</button>
+    </div>
+
+    <div class="form-group">
+        <label for="tid">주문번호</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="tid" placeholder="취소할 결제의 주문번호 입력" style="flex: 1;">
+            <button id="searchButton" style="width: auto; margin: 0; padding: 10px 15px;">거래조회</button>
+        </div>
+    </div>
+
+    <div id="paymentInfo" class="payment-info" style="display: none;">
+        <h3>결제 정보</h3>
+        <div class="payment-details">
+            <div class="detail-item">
+                <div class="detail-label">주문번호</div>
+                <div id="infotid">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">전 결제(취소) 금액</div>
+                <div id="infoAmount">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">상품명</div>
+                <div id="infoGoodsName">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">결제 방식</div>
+                <div id="infoPayMethod">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">결제 상태</div>
+                <div id="infoStatus">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">결제 일시</div>
+                <div id="infoTrxDate">-</div>
+            </div>
+            <!--div class="detail-item" s>
+                <div class="detail-label">전 취소(비과세)금액</div>
+                <div id="infoTaxFreeAmt">-</div>
+            </div>
+            <div class="detail-item" >
+                <div class="detail-label">전 취소금액</div>
+                <div id="infoTaxAmt">-</div>
+            </div-->
+            <div class="detail-item">
+                <div class="detail-label">부분취소상태</div>
+                <div id="infoPartCancelStatus">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">취소가능 잔액</div>
+                <div id="infoRefundBalance">-</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="cancelForm" style="display: none; margin-top: 20px;">
+        <div class="form-group">
+            <label for="cancelType">취소 유형</label>
+            <select id="cancelType" onchange="toggleCancelAmountField()">
+                <option value="full">전체 취소</option>
+                <option value="partial">부분 취소</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="cancelAmountField" style="display: none;">
+            <label for="cancelAmount">취소 금액</label>
+            <input type="number" id="cancelAmount" placeholder="취소할 금액을 입력해주세요" oninput="updateTaxFreeCalculation()">
+        </div>
+
+        <!-- 비과세 취소 설정 섹션 -->
+        <div class="form-group" id="taxFreeSection" style="display: none;">
+            <label>비과세 취소 설정</label>
+            
+            <div style="margin-bottom: 10px;">
+                <input type="checkbox" id="autoCalcTaxFree" onchange="toggleAutoTaxFreeCalculation()">
+                <label for="autoCalcTaxFree" style="display: inline; margin-left: 5px;">비과세 금액 자동 비례 계산</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="cancelTaxFreeAmt">비과세 취소금액</label>
+                <input type="number" id="cancelTaxFreeAmt" value="0" min="0">
+                <small id="taxFreeHelp" style="color: #666; display: block; margin-top: 5px;">
+                    비과세 금액이 있는 결제의 경우에만 사용하세요
+                </small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="cancelReason">취소 사유</label>
+            <textarea id="cancelReason" placeholder="취소 사유를 입력해주세요"></textarea>
+        </div>
+
+        <button id="cancelButton" class="danger">결제 취소</button>
+    </div>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>요청 처리 중...</p>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    // 취소 유형에 따라 취소 금액 필드 표시/숨김 처리
+    function toggleCancelAmountField() {
+        const cancelType = document.getElementById('cancelType').value;
+        const cancelAmountField = document.getElementById('cancelAmountField');
+        const taxFreeSection = document.getElementById('taxFreeSection');
+        
+        if (cancelType === 'partial') {
+            cancelAmountField.style.display = 'block';
+            // 비과세 금액이 있는 결제인 경우만 비과세 섹션 표시
+            if (currentPayment && currentPayment.taxFreeAmt && currentPayment.taxFreeAmt > 0) {
+                taxFreeSection.style.display = 'block';
+                updateTaxFreeHelp(currentPayment.van);
+            }
+        } else {
+            cancelAmountField.style.display = 'none';
+            taxFreeSection.style.display = 'none';
+            // 전체 취소일 경우 취소 금액 필드 초기화
+            document.getElementById('cancelAmount').value = '';
+            document.getElementById('cancelTaxFreeAmt').value = '0';
+            document.getElementById('autoCalcTaxFree').checked = false;
+        }
+    }
+
+    // 결제수단별 비과세 도움말 업데이트
+    function updateTaxFreeHelp(payMethod) {
+        const taxFreeHelp = document.getElementById('taxFreeHelp');
+        if (!taxFreeHelp) return;
+        
+        let helpText = '';
+        if (payMethod && payMethod.includes('NAVERPAY')) {
+            helpText = '네이버페이 복합과세 결제의 비과세 취소금액을 입력하세요';
+        } else if (payMethod && payMethod.includes('KAKAOPAY')) {
+            helpText = '카카오페이 복합과세 결제의 비과세 취소금액을 입력하세요';
+        } else if (payMethod && payMethod.includes('HP')) {
+            helpText = '휴대폰 결제는 과세 결제만 지원합니다 (비과세 금액 없음)';
+        } else {
+            helpText = '복합과세 결제의 경우 비과세 취소금액을 입력하세요';
+        }
+        
+        taxFreeHelp.textContent = helpText;
+    }
+
+    // 서버 URL 설정
+    const SERVER_URL = 'https://jh.winglobalpay.com';
+    
+
+    // JWT 토큰을 저장할 변수
+    let jwtToken = '';
+
+    // 하드코딩된 로그인 정보 (샘플용 - 실제 프로덕션에서는 사용하지 말 것)
+    const sampleCredentials = {
+        tmnId: '....',
+    };
+
+    // 현재 조회된 결제 정보
+    let currentPayment = null;
+
+    // 페이지 로드 시 JWT 체크
+    document.addEventListener('DOMContentLoaded', function() {
+        //console.log('DOM 로드 완료');
+
+        // 로컬 스토리지에서 토큰 확인
+        jwtToken = localStorage.getItem('jwtToken');
+        updateAuthStatus();
+        
+        // 취소 금액 필드 초기 상태 설정
+        toggleCancelAmountField();
+
+        // 로그인 버튼 이벤트
+        const loginButton = document.getElementById('loginButton');
+        if (loginButton) {
+            loginButton.addEventListener('click', function() {
+                if (jwtToken) {
+                    // 로그아웃
+                    logout();
+                } else {
+                    // 로그인
+                    login();
+                }
+            });
+        }
+
+        // 조회 버튼 이벤트
+        const searchButton = document.getElementById('searchButton');
+        if (searchButton) {
+            searchButton.addEventListener('click', function() {
+                if (!jwtToken) {
+                    showErrorMessage('조회하려면 먼저 로그인해주세요.');
+                    return;
+                }
+                searchPayment();
+            });
+        }
+
+        // 취소 버튼 이벤트
+        const cancelButton = document.getElementById('cancelButton');
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function() {
+                if (!jwtToken) {
+                    showErrorMessage('취소하려면 먼저 로그인해주세요.');
+                    return;
+                }
+                cancelPayment();
+            });
+        }
+    });
+
+    // 로그인 함수
+    function login() {
+        //console.log('로그인 시도');
+
+        const loaderElement = document.getElementById('loader');
+        const resultElement = document.getElementById('result');
+
+        if (loaderElement) loaderElement.style.display = 'block';
+        if (resultElement) resultElement.innerHTML = '';
+
+        // 인증 키 (실제로는 보안 키로 대체해야 함)
+        const authKey = "...";
+
+        // API 호출 - API 키를 Authorization 헤더로 전송
+        fetch(`${SERVER_URL}/api/auth/login`, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authKey}`
+            },
+            body: JSON.stringify({
+                tmnId: sampleCredentials.tmnId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                // 403 에러 처리
+                if (response.status === 403) {
+                    jwtToken = '';
+                    localStorage.removeItem('jwtToken');
+                    updateAuthStatus();
+                    throw new Error('로그인이 끊겼습니다. 다시 로그인 해주시기 바랍니다.');
+                }
+                return response.text().then(errorText => {
+                    throw new Error(`HTTP 오류! 상태: ${response.status}, 메시지: ${errorText}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (loaderElement) loaderElement.style.display = 'none';
+
+            if (data.token) {
+                jwtToken = data.token;
+                localStorage.setItem('jwtToken', jwtToken);
+                updateAuthStatus();
+                showSuccessMessage('로그인 성공!');
+            } else {
+                showErrorMessage('토큰을 받지 못했습니다.');
+            }
+        })
+        .catch(error => {
+            if (loaderElement) loaderElement.style.display = 'none';
+            //console.error('로그인 중 오류:', error);
+            showErrorMessage(`로그인 오류: ${error.message}`);
+        });
+    }
+
+    // 로그아웃 함수
+    function logout() {
+        jwtToken = '';
+        localStorage.removeItem('jwtToken');
+        updateAuthStatus();
+        showSuccessMessage('로그아웃 되었습니다.');
+
+        // 결제 정보 초기화
+        hidePaymentInfo();
+    }
+
+    // 인증 상태 업데이트
+    function updateAuthStatus() {
+        const authStatus = document.getElementById('authStatus');
+        const loginButton = document.getElementById('loginButton');
+
+        if (jwtToken) {
+            if (authStatus) {
+                authStatus.textContent = '로그인됨';
+                authStatus.className = 'status logged-in';
+            }
+            if (loginButton) {
+                loginButton.textContent = '로그아웃';
+            }
+        } else {
+            if (authStatus) {
+                authStatus.textContent = '로그인 필요';
+                authStatus.className = 'status logged-out';
+            }
+            if (loginButton) {
+                loginButton.textContent = '로그인';
+            }
+
+            // 로그아웃 시 결제 정보 숨기기
+            hidePaymentInfo();
+        }
+    }
+
+    // 결제 정보 조회 함수
+    function searchPayment() {
+        const tidInput = document.getElementById('tid');
+        if (!tidInput || !tidInput.value.trim()) {
+            showErrorMessage('주문번호를 입력해주세요.');
+            return;
+        }
+
+        const tid = tidInput.value.trim();
+        const loaderElement = document.getElementById('loader');
+        const resultElement = document.getElementById('result');
+
+        if (loaderElement) loaderElement.style.display = 'block';
+        if (resultElement) resultElement.innerHTML = '';
+
+        // 결제 상태 조회 API 호출
+        fetch(`${SERVER_URL}/api/payment/status/${tid}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                // 403 에러 처리
+                if (response.status === 403) {
+                    jwtToken = '';
+                    localStorage.removeItem('jwtToken');
+                    updateAuthStatus();
+                    throw new Error('로그인이 끊겼습니다. 다시 로그인 해주시기 바랍니다.');
+                }
+                if (response.status === 401) {
+                    jwtToken = '';
+                    localStorage.removeItem('jwtToken');
+                    updateAuthStatus();
+                    throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+                }
+
+                return response.text().then(errorText => {
+                    throw new Error(`HTTP 오류! 상태: ${response.status}, 메시지: ${errorText}`);
+                });
+
+                throw new Error(`HTTP 오류! 상태: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (loaderElement) loaderElement.style.display = 'none';
+            //console.log('응답 데이터 구조:', data);
+
+            // data.payment 형식이면 data로 변환, 아니면 그대로 사용
+            let paymentData = data;
+            if (data.payment) {
+                paymentData = data.payment;
+                //console.log('결제 정보가 payment 키에 있습니다.');
+            }
+
+            if (data.success || paymentData.success) {
+                // 결제 정보 표시
+                displayPaymentInfo(paymentData);
+                showSuccessMessage('결제 정보를 조회했습니다.');
+            } else {
+                // 실패 응답
+                hidePaymentInfo();
+                showErrorMessage(`결제 정보 조회 실패: ${data.message || paymentData.message || '결제 정보를 찾을 수 없습니다.'}`);
+            }
+        })
+        .catch(error => {
+            if (loaderElement) loaderElement.style.display = 'none';
+            hidePaymentInfo();
+            //console.error('결제 정보 조회 중 오류:', error);
+            showErrorMessage(`오류: ${error.message}`);
+        });
+    }
+
+    // 결제 정보 표시 함수
+    function displayPaymentInfo(data) {
+        currentPayment = data;
+
+        // 디버깅: 응답 데이터 확인
+        //console.log('응답 데이터:', data);
+
+        // 결제 정보 요소 표시
+        const paymentInfoElement = document.getElementById('paymentInfo');
+        if (paymentInfoElement) paymentInfoElement.style.display = 'block';
+
+        // 결제 정보 채우기 - API 응답 필드명에 맞춰 수정
+        const refund = data.refundBalance ? data.refundBalance : 0;
+        const amount = data.amt ? data.amt : 0;
+
+        console.log('amount: ', amount);
+        console.log('refund: ', refund);
+        document.getElementById('infotid').textContent = data.tid || '-';
+        //document.getElementById('infoAmount').textContent = refund  ? formatNumber((amount*-1+refund)) + '원ㅁㅁ' : formatNumber((amount+refund)) + '원' ;
+        document.getElementById('infoAmount').textContent = data.amt + '원' ;
+        document.getElementById('infoGoodsName').textContent = data.goodsName || '-';
+        document.getElementById('infoPayMethod').textContent = data.van ? data.van : '-';
+        document.getElementById('infoStatus').textContent = data.status || data.message || '-';
+        document.getElementById('infoTrxDate').textContent = formatDate(data.appDtm) || '-';
+        
+        // 비과세 금액 정보 추가
+/*
+        if (data.taxFreeAmt && data.taxFreeAmt > 0) {
+            document.getElementById('infoTaxFreeAmt').textContent = formatNumber(amount < 0 ? data.taxFreeAmt*-1 :  0) + '원';
+            document.getElementById('infoTaxAmt').textContent = formatNumber(refund === 0 ? 0 : amount) + '원';
+        } else {
+            document.getElementById('infoTaxFreeAmt').textContent = '과세 결제';
+            document.getElementById('infoTaxAmt').textContent = data.amt ? formatNumber(data.amt) + '원' : '-';
+        }
+*/
+        
+        // 자동 계산 모드일 때 거래 조회 시 즉시 반영
+        const autoCalcCheckbox = document.getElementById('autoCalcTaxFree');
+        if (autoCalcCheckbox && autoCalcCheckbox.checked) {
+            calculateProportionalTaxFree();
+        }
+        
+        // 부분취소 상태 정보
+        if (data.partCancelYn === 'Y') {
+            if(data.partCancelStatus === 'PCD') {
+                document.getElementById('infoPartCancelStatus').textContent = '부분취소완료';
+            } else {
+                document.getElementById('infoPartCancelStatus').textContent = '부분취소';
+            }
+            if (data.refundBalance) {
+                document.getElementById('infoRefundBalance').textContent = formatNumber(data.refundBalance) + '원';
+            } else {
+                document.getElementById('infoRefundBalance').textContent = '-';
+            }
+        } else {
+            document.getElementById('infoPartCancelStatus').textContent = '-';
+            if (data.refundBalance) {
+                document.getElementById('infoRefundBalance').textContent = formatNumber(data.refundBalance) + '원';
+            } else {
+                document.getElementById('infoRefundBalance').textContent = '-';
+            }
+        }
+
+        // 취소 가능한 상태인 경우에만 취소 폼 표시
+        const cancelFormElement = document.getElementById('cancelForm');
+        if (cancelFormElement) {
+            if (data.cancelYn === 'N' || data.status === '부분취소') {
+                cancelFormElement.style.display = 'block';
+                
+                // 부분 취소인 경우 취소 유형 기본값을 '부분 취소'로 설정
+                if (data.status === '부분취소') {
+                    const cancelTypeSelect = document.getElementById('cancelType');
+                    if (cancelTypeSelect) {
+                        cancelTypeSelect.value = 'partial';
+                        toggleCancelAmountField(); // 취소 금액 필드 표시
+                    }
+                }
+                
+                // 비과세 금액이 있는 결제의 경우 도움말 업데이트
+                if (data.taxFreeAmt && data.taxFreeAmt > 0) {
+                    updateTaxFreeHelp(data.van);
+                }
+            } else {
+                cancelFormElement.style.display = 'none';
+                if (data.cancelYn === 'Y') {
+                    showErrorMessage('이미 취소된 결제입니다.');
+                } else {
+                    showErrorMessage('취소 가능한 상태가 아닙니다.');
+                }
+            }
+        }
+    }
+
+    // 결제 정보 숨기기 함수
+    function hidePaymentInfo() {
+        currentPayment = null;
+
+        const paymentInfoElement = document.getElementById('paymentInfo');
+        if (paymentInfoElement) paymentInfoElement.style.display = 'none';
+
+        const cancelFormElement = document.getElementById('cancelForm');
+        if (cancelFormElement) cancelFormElement.style.display = 'none';
+    }
+
+    // 취소 금액 입력 시 비과세 자동 계산 트리거
+    function updateTaxFreeCalculation() {
+        const autoCalcCheckbox = document.getElementById('autoCalcTaxFree');
+        if (autoCalcCheckbox && autoCalcCheckbox.checked) {
+            calculateProportionalTaxFree();
+        }
+    }
+
+    // 비과세 자동 계산 토글
+    function toggleAutoTaxFreeCalculation() {
+        const autoCalcCheckbox = document.getElementById('autoCalcTaxFree');
+        const cancelTaxFreeAmtInput = document.getElementById('cancelTaxFreeAmt');
+        
+        if (autoCalcCheckbox && cancelTaxFreeAmtInput) {
+            if (autoCalcCheckbox.checked) {
+                // 자동 계산 모드: 입력 필드 비활성화
+                cancelTaxFreeAmtInput.disabled = true;
+                cancelTaxFreeAmtInput.placeholder = '자동 계산됨';
+                calculateProportionalTaxFree();
+            } else {
+                // 수동 입력 모드: 입력 필드 활성화
+                cancelTaxFreeAmtInput.disabled = false;
+                cancelTaxFreeAmtInput.placeholder = '비과세 취소금액 입력';
+            }
+        }
+    }
+
+    // 비과세 비례 계산
+    function calculateProportionalTaxFree() {
+        const cancelAmountInput = document.getElementById('cancelAmount');
+        const cancelTaxFreeAmtInput = document.getElementById('cancelTaxFreeAmt');
+        const autoCalcCheckbox = document.getElementById('autoCalcTaxFree');
+        
+        if (!autoCalcCheckbox.checked || !currentPayment) {
+            return;
+        }
+        
+        if (!currentPayment.taxFreeAmt || currentPayment.taxFreeAmt <= 0) {
+            showErrorMessage('거래조회를 먼저 진행하여 비과세 금액 정보를 확인해주세요.');
+            autoCalcCheckbox.checked = false;
+            return;
+        }
+        
+        const cancelAmount = cancelAmountInput.value ? parseInt(cancelAmountInput.value, 10) : 0;
+        
+        if (cancelAmount > 0) {
+            // 비과세 취소금액 = (원래 비과세금액 × 취소금액) ÷ 총결제금액
+            const proportionalTaxFree = Math.floor((currentPayment.taxFreeAmt * cancelAmount) / currentPayment.amt);
+            cancelTaxFreeAmtInput.value = proportionalTaxFree;
+            
+            showSuccessMessage(`비과세 금액 자동 계산: ${formatNumber(proportionalTaxFree)}원\n` +
+                `(계산식: ${formatNumber(currentPayment.taxFreeAmt)}원 × ${formatNumber(cancelAmount)}원 ÷ ${formatNumber(currentPayment.amt)}원)`);
+        } else {
+            cancelTaxFreeAmtInput.value = 0;
+        }
+    }
+    function cancelPayment() {
+        if (!currentPayment) {
+            showErrorMessage('취소할 결제 정보가 없습니다. 먼저 결제 내역을 조회해주세요.');
+            return;
+        }
+
+        if (currentPayment.cancelYn !== 'N' && currentPayment.status !== '부분취소') {
+            showErrorMessage('취소 가능한 결제 상태가 아닙니다.');
+            return;
+        }
+
+        const cancelReasonInput = document.getElementById('cancelReason');
+        if (!cancelReasonInput || !cancelReasonInput.value.trim()) {
+            showErrorMessage('취소 사유를 입력해주세요.');
+            return;
+        }
+
+        const cancelReason = cancelReasonInput.value.trim();
+        const tid = currentPayment.tid;
+
+		// 디버깅: tid 값 확인
+	    //console.log('취소할 tid:', tid);
+		//console.log('취소할 응답 데이터:', currentPayment);
+
+        const loaderElement = document.getElementById('loader');
+        const resultElement = document.getElementById('result');
+
+        if (loaderElement) loaderElement.style.display = 'block';
+        if (resultElement) resultElement.innerHTML = '';
+
+        // 취소 요청 데이터
+        const cancelRequest = {
+            tid: tid,
+            tmnId: sampleCredentials.tmnId,
+            cancelReason: cancelReason
+        };
+        
+        // 부분 취소인 경우 취소 금액 추가
+        const cancelType = document.getElementById('cancelType').value;
+        if (cancelType === 'partial') {
+            const cancelAmountInput = document.getElementById('cancelAmount');
+            if (cancelAmountInput && cancelAmountInput.value.trim()) {
+                const cancelAmount = parseInt(cancelAmountInput.value.trim(), 10);
+                if (isNaN(cancelAmount) || cancelAmount <= 0) {
+                    showErrorMessage('유효한 취소 금액을 입력해주세요.');
+                    if (loaderElement) loaderElement.style.display = 'none';
+                    return;
+                }
+                cancelRequest.cancelAmount = cancelAmount;
+                
+                // 비과세 취소금액 추가 (네이버페이만)
+                const cancelTaxFreeAmtInput = document.getElementById('cancelTaxFreeAmt');
+                if (cancelTaxFreeAmtInput && cancelTaxFreeAmtInput.value.trim()) {
+                    const cancelTaxFreeAmt = parseInt(cancelTaxFreeAmtInput.value.trim(), 10);
+                    if (!isNaN(cancelTaxFreeAmt) && cancelTaxFreeAmt > 0) {
+                        cancelRequest.taxFreeAmt = cancelTaxFreeAmt;
+                    }
+                }
+            } else {
+                showErrorMessage('부분 취소 시 취소 금액을 입력해주세요.');
+                if (loaderElement) loaderElement.style.display = 'none';
+                return;
+            }
+        }
+
+        // 취소 API 호출
+        fetch(`${SERVER_URL}/api/payment/cancelRequest`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify(cancelRequest)
+        })
+        .then(response => {
+            if (!response.ok) {
+                // 403 에러 처리
+                if (response.status === 403) {
+                    jwtToken = '';
+                    localStorage.removeItem('jwtToken');
+                    updateAuthStatus();
+                    throw new Error('로그인이 끊겼습니다. 다시 로그인 해주시기 바랍니다.');
+                }
+                if (response.status === 401) {
+                    jwtToken = '';
+                    localStorage.removeItem('jwtToken');
+                    updateAuthStatus();
+                    throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+                }
+                return response.text().then(errorText => {
+                    throw new Error(`HTTP 오류! 상태: ${response.status}, 메시지: ${errorText}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (loaderElement) loaderElement.style.display = 'none';
+
+            if (data.success) {
+                // 취소 성공 처리
+                let successMessage = '결제가 성공적으로 취소되었습니다.';
+                
+                // 부분취소 상세 정보 표시
+                if (cancelRequest.cancelAmount) {
+                    successMessage += `\n\n[부분취소 상세]`;
+                    successMessage += `\n취소금액: ${formatNumber(cancelRequest.cancelAmount)}원`;
+                    
+                    if (cancelRequest.taxFreeAmt && cancelRequest.taxFreeAmt > 0) {
+                        successMessage += `\n비과세 취소금액: ${formatNumber(cancelRequest.taxFreeAmt)}원`;
+                        successMessage += `\n과세 취소금액: ${formatNumber(cancelRequest.cancelAmount - cancelRequest.taxFreeAmt)}원`;
+                    }
+                    
+                    // 남은 금액 계산
+                    const remainingAmount = currentPayment.amt - cancelRequest.cancelAmount;
+                    successMessage += `\n남은 결제금액: ${formatNumber(remainingAmount)}원`;
+                } else {
+                    successMessage += '\n\n[전체취소]';
+                    if (currentPayment.taxFreeAmt && currentPayment.taxFreeAmt > 0) {
+                        successMessage += `\n비과세금액: ${formatNumber(currentPayment.taxFreeAmt)}원`;
+                        successMessage += `\n과세금액: ${formatNumber(currentPayment.amt - currentPayment.taxFreeAmt)}원`;
+                    }
+                }
+                
+                showSuccessMessage(successMessage);
+
+                // 결제 정보 다시 조회
+                setTimeout(() => {
+                    const tidInput = document.getElementById('tid');
+                    if (tidInput && tidInput.value.trim()) {
+                        searchPayment();
+                    }
+                }, 1000);
+            } else {
+                // 취소 실패 처리
+                showErrorMessage(`취소 실패: ${data.message || '알 수 없는 오류가 발생했습니다.'}`);
+            }
+        })
+        .catch(error => {
+            if (loaderElement) loaderElement.style.display = 'none';
+            //console.error('결제 취소 중 오류:', error);
+            showErrorMessage(`오류: ${error.message}`);
+        });
+    }
+
+    // 결제 상태 포맷팅 함수
+    function formatStatus(status) {
+        if (!status) return '-';
+
+        switch (status) {
+            case 'REQUEST_PAYMENT':
+                return '결제 요청';
+            case 'COMPLETING_PAYMENT':
+                return '결제 진행 중';
+            case 'COMPLETED_PAYMENT':
+                return '결제 완료';
+            case 'FAILED_PAYMENT':
+                return '결제 실패';
+            case 'COMPLETED_CANCEL':
+                return '취소 완료';
+            case '승인':
+                return '결제 완료';
+            default:
+                return status;
+        }
+    }
+
+   
+    // 날짜 포맷팅 함수
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+
+        // appDtm 값은 일반적으로 YYYYMMDDHHmmss 형식 (14자리)
+        if (dateStr.length === 14) {
+            // YYYYMMDDHHMMSS
+            return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)} ${dateStr.substring(8, 10)}:${dateStr.substring(10, 12)}:${dateStr.substring(12, 14)}`;
+        }
+        // 8자리 날짜(YYYYMMDD) 처리
+        else if (dateStr.length === 8) {
+            return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+        }
+        // 12자리 날짜(YYYYMMDDHHMM) 처리
+        else if (dateStr.length === 12) {
+            return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)} ${dateStr.substring(8, 10)}:${dateStr.substring(10, 12)}`;
+        }
+        return dateStr;
+    }
+
+    // 숫자 포맷팅 함수 (천 단위 콤마)
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // 메시지 표시 헬퍼 함수들
+    function showErrorMessage(message) {
+        const resultElement = document.getElementById('result');
+        if (resultElement) {
+            resultElement.innerHTML = `<div class="error">${message}</div>`;
+            resultElement.scrollIntoView({ behavior: 'smooth' });
+        }
+        //console.error(message);
+    }
+
+    function showSuccessMessage(message) {
+        const resultElement = document.getElementById('result');
+        if (resultElement) {
+            resultElement.innerHTML = `<div class="success">${message}</div>`;
+            resultElement.scrollIntoView({ behavior: 'smooth' });
+        }
+        //console.log(message);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#ffffff; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.65; }
+  ::selection { background:#dbe4ff; }
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; }
+  input, select, textarea { font-family:inherit; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#3a56c5 !important; }
+</style>
+</helmet>
+
+<div id="top" style="min-height:100vh;">
+
+  <!-- NAV -->
+  <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
+    <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
+      <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
+        <a href="index.html#category" style-hover="{{ linkHover }}">카테고리</a>
+        <a href="index.html#products" style-hover="{{ linkHover }}">인기제품</a>
+        <a href="reviews.dc.html" style-hover="{{ linkHover }}">후기</a>
+        <a href="support.dc.html?page=faq" style="color:#3a56c5;">고객지원</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HEADER -->
+  <section style="background:#f6f7f9;border-bottom:1px solid #eceef1;">
+    <div style="max-width:1080px;margin:0 auto;padding:44px 28px;">
+      <div style="font-size:13px;color:#9a9aa0;margin-bottom:12px;">
+        <a href="index.html" style-hover="{{ linkHover }}">홈</a> <span style="margin:0 6px;">›</span> <span style="color:#55555c;">{{ title }}</span>
+      </div>
+      <h1 style="font-weight:800;font-size:clamp(26px,3.6vw,38px);letter-spacing:-.02em;">{{ title }}</h1>
+      <p style="font-size:15px;color:#7c7c82;margin-top:8px;">{{ subtitle }}</p>
+    </div>
+  </section>
+
+  <div style="max-width:1080px;margin:0 auto;padding:34px 28px 80px;display:grid;grid-template-columns:210px 1fr;gap:40px;">
+
+    <!-- SIDE TABS -->
+    <aside>
+      <div style="display:flex;flex-direction:column;gap:2px;position:sticky;top:100px;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+          <a href="{{ t.href }}" style="{{ t.style }}">{{ t.label }}</a>
+        </sc-for>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main style="min-width:0;">
+
+      <!-- 회사소개 -->
+      <sc-if value="{{ isCompany }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:22px;font-size:15px;color:#3a3c42;">
+          <p style="font-size:18px;font-weight:700;color:#1c1c1e;line-height:1.5;">오래 앉는 모든 순간을 편안하게.<br>MORESEAT는 인체공학 데스크·체어 전문 브랜드입니다.</p>
+          <p>2021년 시작한 MORESEAT는 게이머, 재택근무자, 학생을 위한 인체공학 가구를 만듭니다. 하루의 절반을 앉아 보내는 시대, 좋은 의자와 책상이 곧 삶의 질이라는 믿음으로 제품을 설계합니다.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:8px;">
+            <div style="border:1px solid #eceef1;border-radius:12px;padding:20px;"><div style="font-weight:800;font-size:24px;">12,000+</div><div style="font-size:13px;color:#8a8d94;margin-top:4px;">누적 판매</div></div>
+            <div style="border:1px solid #eceef1;border-radius:12px;padding:20px;"><div style="font-weight:800;font-size:24px;">4.8 / 5.0</div><div style="font-size:13px;color:#8a8d94;margin-top:4px;">평균 만족도</div></div>
+            <div style="border:1px solid #eceef1;border-radius:12px;padding:20px;"><div style="font-weight:800;font-size:24px;">3년</div><div style="font-size:13px;color:#8a8d94;margin-top:4px;">무상 A/S</div></div>
+          </div>
+          <div style="border-top:1px solid #eceef1;padding-top:20px;margin-top:8px;font-size:14px;line-height:2;color:#55575d;">
+            <div>· 상호 대한매니지먼트(주)</div>
+            <div>· 소재지 경기도 성남시 중원구 둔촌대로541번길 13 (상대원동, 2층)</div>
+            <div>· 사업자등록번호 129-86-45068</div>
+            <div>· 고객센터 031) 750-2450 (평일 10:00–18:00)</div>
+            <div>· 고객문의 help@moreseat.co.kr</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 개인정보 처리방침 -->
+      <sc-if value="{{ isPrivacy }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:20px;font-size:14.5px;color:#3a3c42;">
+          <p>대한매니지먼트(주)(이하 '회사')는 이용자의 개인정보를 중요하게 생각하며 「개인정보 보호법」을 준수합니다. 본 방침은 회사가 제공하는 서비스 이용에 적용됩니다.</p>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">1. 수집하는 개인정보 항목</div><p>회원가입·주문 시 이름, 이메일, 연락처, 배송지 주소, 결제 정보를 수집합니다. 서비스 이용 과정에서 접속 기록, 쿠키가 자동 생성·수집될 수 있습니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">2. 개인정보의 이용 목적</div><p>회원 관리, 상품 주문·배송, 결제 및 정산, 고객 문의 대응, 신규 서비스 안내에 이용합니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">3. 보유 및 이용 기간</div><p>회원 탈퇴 시 즉시 파기합니다. 단, 관계 법령에 따라 거래 기록은 5년, 소비자 불만·분쟁 기록은 3년간 보관합니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">4. 개인정보 보호책임자</div><p>성명 김보안 · 이메일 privacy@moreseat.co.kr3332</p></div>
+          <p style="font-size:13px;color:#9a9aa0;">본 방침은 2026년 7월 1일부터 적용됩니다.</p>
+        </div>
+      </sc-if>
+
+      <!-- 이용약관 -->
+      <sc-if value="{{ isTerms }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:20px;font-size:14.5px;color:#3a3c42;">
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">제1조 (목적)</div><p>본 약관은 대한매니지먼트(주)가 운영하는 온라인 쇼핑몰에서 제공하는 서비스의 이용 조건 및 절차, 회사와 이용자의 권리·의무를 규정함을 목적으로 합니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">제2조 (정의)</div><p>'이용자'란 본 약관에 따라 회사가 제공하는 서비스를 이용하는 회원 및 비회원을 말합니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">제3조 (주문 및 결제)</div><p>이용자는 상품을 선택해 주문하며, 회사는 결제 확인 후 배송을 진행합니다. 재고 소진 등 사유로 주문이 취소될 수 있습니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">제4조 (청약철회 및 교환·반품)</div><p>이용자는 상품 수령 후 7일 이내 청약철회가 가능합니다. 단순 변심의 경우 왕복 배송비가 부과될 수 있으며, 상품 훼손 시 제한될 수 있습니다.</p></div>
+          <div><div style="font-weight:700;font-size:16px;color:#1c1c1e;margin-bottom:8px;">제5조 (보증 및 A/S)</div><p>회사는 구매일로부터 3년간 무상 A/S를 제공합니다. 소비자 과실로 인한 손상은 유상 처리될 수 있습니다.</p></div>
+          <p style="font-size:13px;color:#9a9aa0;">본 약관은 2026년 7월 1일부터 시행됩니다.</p>
+        </div>
+      </sc-if>
+
+      <!-- AS 예약 -->
+      <sc-if value="{{ isAs }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ asDone }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid #d3ead9;background:#f0f8f2;border-radius:14px;padding:32px;text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:#1f8a5b;margin-bottom:10px;">A/S 예약이 접수되었습니다</div>
+            <p style="font-size:14.5px;color:#3a3c42;">담당 기사가 2영업일 이내 입력하신 연락처로 연락드립니다. 감사합니다.</p>
+            <button onClick="{{ asReset }}" style="margin-top:20px;background:#1c1c1e;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border:none;border-radius:9px;cursor:pointer;">새 예약하기</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ asForm }}" hint-placeholder-val="{{ true }}">
+          <div style="border:1px solid #eceef1;border-radius:14px;padding:28px;max-width:520px;">
+            <p style="font-size:14px;color:#7c7c82;margin-bottom:22px;">제품 사용 중 불편한 점을 남겨주세요. 접수 후 담당 기사가 연락드립니다.</p>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">이름</label><input value="{{ as.name }}" onInput="{{ onAsName }}" placeholder="홍길동" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" /></div>
+              <div><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">연락처</label><input value="{{ as.phone }}" onInput="{{ onAsPhone }}" placeholder="010-0000-0000" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" /></div>
+              <div><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">제품 / 증상</label><textarea value="{{ as.issue }}" onInput="{{ onAsIssue }}" placeholder="예: APEX 인체공학 체어 - 높이 조절 레버가 헐거워요" style="width:100%;min-height:100px;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;line-height:1.6;resize:vertical;"></textarea></div>
+              <sc-if value="{{ asError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#d84040;font-weight:600;">{{ asError }}</div></sc-if>
+              <button onClick="{{ asSubmit }}" style="background:#1c1c1e;color:#fff;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;">예약 접수</button>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- 1:1 문의 -->
+      <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ cDone }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid #d3ead9;background:#f0f8f2;border-radius:14px;padding:32px;text-align:center;max-width:520px;">
+            <div style="font-size:20px;font-weight:800;color:#1f8a5b;margin-bottom:10px;">문의가 접수되었습니다</div>
+            <p style="font-size:14.5px;color:#3a3c42;">입력하신 이메일로 영업일 기준 1일 이내 답변드리겠습니다. 감사합니다.</p>
+            <button onClick="{{ cReset }}" style="margin-top:20px;background:#1c1c1e;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border:none;border-radius:9px;cursor:pointer;">새 문의하기</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ cForm }}" hint-placeholder-val="{{ true }}">
+          <div style="border:1px solid #eceef1;border-radius:14px;padding:28px;max-width:520px;">
+            <p style="font-size:14px;color:#7c7c82;margin-bottom:22px;">상품·주문·배송 등 궁금한 점을 남겨주세요. 영업일 기준 1일 이내 답변드립니다.릅니다.</p>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div style="display:flex;gap:14px;">
+                <div style="flex:1;"><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">이름</label><input value="{{ contact.name }}" onInput="{{ onCName }}" placeholder="홍길동" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" /></div>
+                <div style="flex:1;"><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">이메일</label><input value="{{ contact.email }}" onInput="{{ onCEmail }}" type="email" placeholder="you@example.com" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" /></div>
+              </div>
+              <div><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">제목</label><input value="{{ contact.subject }}" onInput="{{ onCSubject }}" placeholder="문의 제목" style="width:100%;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;" /></div>
+              <div><label style="display:block;font-size:13px;font-weight:600;color:#55575d;margin-bottom:7px;">문의 내용</label><textarea value="{{ contact.message }}" onInput="{{ onCMessage }}" placeholder="문의하실 내용을 입력해주세요" style="width:100%;min-height:120px;border:1px solid #dcdee3;border-radius:9px;padding:11px 14px;font-size:14px;line-height:1.6;resize:vertical;"></textarea></div>
+              <sc-if value="{{ cError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#d84040;font-weight:600;">{{ cError }}</div></sc-if>
+              <button onClick="{{ cSubmit }}" style="background:#1c1c1e;color:#fff;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;">문의 접수</button>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- FAQ -->
+      <sc-if value="{{ isFaq }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:10px;max-width:720px;">
+          <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="6">
+            <div style="border:1px solid #eceef1;border-radius:12px;overflow:hidden;">
+              <button onClick="{{ q.onToggle }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:18px 20px;background:none;border:none;cursor:pointer;text-align:left;">
+                <span style="font-weight:800;color:#3a56c5;flex:none;">Q</span>
+                <span style="font-weight:600;font-size:15px;flex:1;">{{ q.q }}</span>
+                <span style="color:#a9adb6;flex:none;font-size:14px;">{{ q.sign }}</span>
+              </button>
+              <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 20px 20px 54px;font-size:14.5px;line-height:1.75;color:#55575d;">{{ q.a }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="background:#2a2a2d;color:#a2a2a8;">
+    <div style="max-width:1280px;margin:0 auto;padding:34px 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;">
+      <div style="font-weight:800;font-size:20px;letter-spacing:.12em;color:#fff;">MORESEAT</div>
+      <div style="font-size:12.5px;color:#8a8a90;">대한매니지먼트(주) · 사업자등록번호 129-86-45068</div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: this.readPage(), openFaq: 0, as: { name: '', phone: '', issue: '' }, asDone: false, asError: '',
+            contact: { name: '', email: '', subject: '', message: '' }, cDone: false, cError: '' };
+
+  linkHover = { color: '#3a56c5' };
+
+  readPage() {
+    try { return new URLSearchParams(location.search).get('page') || 'faq'; } catch (e) { return 'faq'; }
+  }
+
+  setAs(field, val) { this.setState(s => ({ as: { ...s.as, [field]: val }, asError: '' })); }
+  asSubmit() {
+    const a = this.state.as;
+    if (!a.name.trim() || !a.phone.trim() || !a.issue.trim()) { this.setState({ asError: '모든 항목을 입력해주세요.' }); return; }
+    this.setState({ asDone: true });
+  }
+
+  setC(field, val) { this.setState(s => ({ contact: { ...s.contact, [field]: val }, cError: '' })); }
+  cSubmit() {
+    const c = this.state.contact;
+    if (!c.name.trim() || !c.email.trim() || !c.subject.trim() || !c.message.trim()) { this.setState({ cError: '모든 항목을 입력해주세요.' }); return; }
+    if (!/.+@.+\..+/.test(c.email)) { this.setState({ cError: '올바른 이메일을 입력해주세요.' }); return; }
+    this.setState({ cDone: true });
+  }
+
+  faqData = [
+    { q: '배송은 얼마나 걸리나요?', a: '전 제품 무료배송이며, 오늘 오후 2시 이전 주문 건은 당일 출고됩니다. 일반적으로 1~3일 내 수령 가능하며 도서·산간 지역은 1~2일 추가될 수 있습니다.' },
+    { q: '조립은 직접 해야 하나요?', a: '대부분의 제품은 고객 조립형이며, 필요한 공구와 상세 설명서가 동봉됩니다. 데스크·체어 기준 20~40분이면 완성할 수 있습니다. 전동 데스크는 방문 설치 옵션도 제공합니다.' },
+    { q: '교환·반품이 가능한가요?', a: '상품 수령 후 7일 이내 교환·반품이 가능합니다. 단순 변심의 경우 왕복 배송비가 부과되며, 상품이 훼손된 경우 제한될 수 있습니다.' },
+    { q: 'A/S 보증 기간은 어떻게 되나요?', a: '구매일로부터 3년간 무상 A/S를 제공합니다. 부품 교체·점검을 책임지며, 소비자 과실로 인한 손상은 유상 처리될 수 있습니다. A/S 예약 메뉴에서 접수해주세요.' },
+    { q: '100일 체험은 어떻게 이용하나요?', a: '수령 후 100일간 사용해보고 만족스럽지 않으면 100% 환불해드립니다. 고객센터로 연락 주시면 회수 후 전액 환불 처리됩니다.' },
+    { q: '결제 수단은 무엇이 있나요?', a: '신용/체크카드, 카카오페이, 계좌이체, 스마트스토어 결제를 지원합니다. 무이자 할부는 카드사별 조건에 따라 적용됩니다.' },
+  ];
+
+  renderVals() {
+    const page = this.state.page;
+    const meta = {
+      company: ['회사소개', 'MORESEAT를 소개합니다'],
+      privacy: ['개인정보 처리방침', '이용자의 개인정보를 소중히 보호합니다'],
+      terms: ['이용약관', '서비스 이용에 관한 약관입니다'],
+      as: ['A/S 예약', '제품 A/S를 간편하게 접수하세요'],
+      faq: ['자주하는 질문', '고객님이 가장 많이 묻는 질문을 모았습니다'],
+      contact: ['1:1 문의', '궁금한 점을 남겨주시면 빠르게 답변드립니다'],
+    };
+    const tabDefs = [
+      { key: 'company', label: '회사소개' }, { key: 'faq', label: '자주하는 질문' },
+      { key: 'contact', label: '1:1 문의' }, { key: 'as', label: 'A/S 예약' },
+      { key: 'privacy', label: '개인정보 처리방침' }, { key: 'terms', label: '이용약관' },
+    ];
+    const tabs = tabDefs.map(t => {
+      const active = t.key === page;
+      return {
+        label: t.label, href: 'support.dc.html?page=' + t.key,
+        style: {
+          display: 'block', padding: '11px 14px', borderRadius: '9px', fontSize: '14.5px',
+          fontWeight: active ? 700 : 600, color: active ? '#3a56c5' : '#55575d',
+          background: active ? '#eef1f8' : 'transparent',
+        },
+      };
+    });
+    const faqs = this.faqData.map((f, i) => ({
+      q: f.q, a: f.a, open: this.state.openFaq === i, sign: this.state.openFaq === i ? '−' : '+',
+      onToggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i })),
+    }));
+    const [title, subtitle] = meta[page] || meta.faq;
+
+    return {
+      linkHover: this.linkHover, tabs, title, subtitle,
+      isCompany: page === 'company', isPrivacy: page === 'privacy', isTerms: page === 'terms',
+      isAs: page === 'as', isFaq: page === 'faq', isContact: page === 'contact',
+      contact: this.state.contact, cError: this.state.cError, cDone: this.state.cDone, cForm: !this.state.cDone,
+      onCName: (e) => this.setC('name', e.target.value),
+      onCEmail: (e) => this.setC('email', e.target.value),
+      onCSubject: (e) => this.setC('subject', e.target.value),
+      onCMessage: (e) => this.setC('message', e.target.value),
+      cSubmit: () => this.cSubmit(),
+      cReset: () => this.setState({ cDone: false, contact: { name: '', email: '', subject: '', message: '' } }),
+      faqs, as: this.state.as, asError: this.state.asError,
+      asDone: this.state.asDone, asForm: !this.state.asDone,
+      onAsName: (e) => this.setAs('name', e.target.value),
+      onAsPhone: (e) => this.setAs('phone', e.target.value),
+      onAsIssue: (e) => this.setAs('issue', e.target.value),
+      asSubmit: () => this.asSubmit(), asReset: () => this.setState({ asDone: false, as: { name: '', phone: '', issue: '' } }),
+    };
+  }
+}
+</script>
+</body>
+</html>
