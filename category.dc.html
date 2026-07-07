@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { max-width:100%; overflow-x:hidden; }
   body { background:#ffffff; color:#1c1c1e; font-family:'Pretendard',system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.55; }
   ::selection { background:#dbe4ff; }
   a { color:inherit; text-decoration:none; }
@@ -102,8 +103,8 @@
   <section style="max-width:1280px;margin:0 auto;padding:26px 28px 70px;">
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px;">
       <sc-for list="{{ products }}" as="p" hint-placeholder-count="6">
-        <article style="border-radius:14px;display:flex;flex-direction:column;">
-          <a href="{{ p.href }}" style="display:block;" style-hover="{{ cardHover }}">
+        <article style="border-radius:14px;display:flex;flex-direction:column;height:100%;">
+          <a href="{{ p.href }}" style="display:flex;flex-direction:column;flex:1;" style-hover="{{ cardHover }}">
             <div style="position:relative;aspect-ratio:1/1;background:#f2f3f5;border-radius:14px;overflow:hidden;">
               <img src="{{ p.photo }}" alt="{{ p.name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
               <span style="position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;color:#3a56c5;background:#fff;padding:5px 11px;border-radius:999px;">{{ p.catName }}</span>
@@ -112,12 +113,12 @@
               </sc-if>
             </div>
             <div style="padding:16px 4px 0;">
-              <h3 style="font-weight:700;font-size:17px;letter-spacing:-.01em;">{{ p.name }}</h3>
+              <h3 style="font-weight:700;font-size:17px;letter-spacing:-.01em;line-height:1.35;height:46px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ p.name }}</h3>
               <p style="font-size:13px;line-height:1.55;color:#7c7c82;margin-top:6px;height:40px;overflow:hidden;">{{ p.desc }}</p>
               <div style="font-size:12.5px;color:#f4a51c;margin-top:8px;">★ {{ p.rating }} <span style="color:#a9adb6;">({{ p.reviews }})</span></div>
             </div>
           </a>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:0 4px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:0 4px;">
             <div style="font-weight:800;font-size:20px;">₩{{ p.priceFmt }}</div>
             <button onClick="{{ p.add }}" style="background:#1c1c1e;color:#fff;font-weight:600;font-size:13.5px;padding:10px 16px;border:none;border-radius:9px;cursor:pointer;" style-hover="{{ addHover }}">담기</button>
           </div>
