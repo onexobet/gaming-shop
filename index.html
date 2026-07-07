@@ -128,7 +128,7 @@
       <a href="category.dc.html?cat=all" style="font-size:14px;font-weight:600;color:#3a56c5;" style-hover="{{ linkHover }}">전체 보기 →</a>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;">
+    <div style="display:grid;grid-template-columns:{{ prodCols }};gap:20px;">
       <sc-for list="{{ featured }}" as="p" hint-placeholder-count="8">
         <article style="border-radius:14px;display:flex;flex-direction:column;">
           <a href="{{ p.href }}" style="display:block;" style-hover="{{ cardHover }}">
@@ -163,7 +163,7 @@
       </div>
       <a href="category.dc.html?cat=all" style="font-size:14px;font-weight:600;color:#3a56c5;" style-hover="{{ linkHover }}">전체 제품 보기 →</a>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;">
+    <div style="display:grid;grid-template-columns:{{ catCols }};gap:20px;">
       <sc-for list="{{ categories }}" as="c" hint-placeholder-count="8">
         <a href="{{ c.href }}" style="position:relative;display:block;border-radius:16px;overflow:hidden;aspect-ratio:4/5;background:#eef0f3;" style-hover="{{ tileHover }}">
           <img src="{{ c.photo }}" alt="{{ c.name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
@@ -407,6 +407,8 @@ class Component extends DCLogic {
         : 'max-width:1280px;margin:0 auto;padding:52px 28px 28px;display:flex;flex-wrap:wrap;gap:40px 64px;',
       footSpan: this.state.isMobile ? 'grid-column:1 / -1;' : '',
       categories, featured, reviews, strengths: this.strengths,
+      prodCols: this.state.isMobile ? '1fr 1fr' : 'repeat(auto-fill,minmax(200px,1fr))',
+      catCols: this.state.isMobile ? '1fr 1fr' : 'repeat(auto-fill,minmax(220px,1fr))',
       cart: this.state.cart, toast: this.state.toast, showToast: !!this.state.toast,
       catMenu: this.state.catMenu, menuItemHover: this.menuItemHover, arrowHover: this.arrowHover,
       isMobile: this.state.isMobile, desktopNav: !this.state.isMobile,

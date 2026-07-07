@@ -176,8 +176,8 @@
         <a href="reviews.dc.html" style="font-size:14px;font-weight:600;color:#3a56c5;" style-hover="{{ linkHover }}">전체 후기 보기 →</a>
       </div>
       <sc-if value="{{ hasReviews }}" hint-placeholder-val="{{ true }}">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;">
-          <sc-for list="{{ prodReviews }}" as="r" hint-placeholder-count="2">
+        <div style="display:grid;grid-template-columns:1fr;gap:18px;">
+          <sc-for list="{{ prodReviews }}" as="r" hint-placeholder-count="1">
             <div style="border:1px solid #ececef;border-radius:14px;padding:22px;">
               <div style="color:#f4a51c;font-size:14px;letter-spacing:2px;margin-bottom:10px;">{{ r.stars }}</div>
               <p style="font-size:14.5px;line-height:1.7;color:#2f2f34;">{{ r.text }}</p>
@@ -185,6 +185,9 @@
             </div>
           </sc-for>
         </div>
+        <sc-if value="{{ moreReviews }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ reviewsHref }}" style="display:block;text-align:center;margin-top:18px;padding:14px;border:1px solid #d9dade;border-radius:11px;font-size:14px;font-weight:600;color:#33353a;" style-hover="{{ ghostHover }}">{{ moreLabel }}</a>
+        </sc-if>
       </sc-if>
       <sc-if value="{{ noReviews }}" hint-placeholder-val="{{ false }}">
         <div style="font-size:14px;color:#9a9aa0;padding:20px 0;">아직 등록된 후기가 없습니다.</div>
@@ -341,7 +344,8 @@ class Component extends DCLogic {
     };
     const related = shop.products.filter(x => x.catSlug === prod.catSlug && x.id !== prod.id).slice(0, 4)
       .map(x => ({ ...x, priceFmt: this.won(x.price), href: 'product.dc.html?id=' + x.id }));
-    const prodReviews = shop.reviews.filter(r => r.productId === prod.id).slice(0, 4)
+    const allProdReviews = shop.reviews.filter(r => r.productId === prod.id);
+    const prodReviews = allProdReviews.slice(0, 1)
       .map(r => ({ ...r, stars: this.stars(r.rating) }));
 
     return {
@@ -350,6 +354,8 @@ class Component extends DCLogic {
       stockLabel: prod.stock > 0 ? ('재고 ' + prod.stock + '개') : '품절',
       stockColor: prod.stock > 10 ? '#1f8a5b' : (prod.stock > 0 ? '#c98a1f' : '#d84040'),
       related, prodReviews, hasReviews: prodReviews.length > 0, noReviews: prodReviews.length === 0,
+      reviewsHref: 'reviews.dc.html?product=' + prod.id,
+      moreReviews: allProdReviews.length > 1, moreLabel: '전체 후기 ' + allProdReviews.length + '개 보기 →',
       inc: () => this.setState(s => ({ qty: s.qty + 1 })),
       dec: () => this.setState(s => ({ qty: Math.max(1, s.qty - 1) })),
       addQty: () => this.addToCart(prod.id, prod.name, this.state.qty),
