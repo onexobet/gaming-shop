@@ -26,6 +26,7 @@
   <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
     <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
       <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <sc-if value="{{ desktopNav }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
         <div style="position:relative;" onMouseEnter="{{ openMenu }}" onMouseLeave="{{ closeMenu }}">
           <a href="index.html#category" style-hover="{{ linkHover }}">카테고리 ▾</a>
@@ -46,12 +47,37 @@
         <a href="reviews.dc.html" style-hover="{{ linkHover }}">후기</a>
         <a href="support.dc.html?page=contact" style-hover="{{ linkHover }}">문의</a>
       </div>
+      </sc-if>
       <div style="flex:1;"></div>
-      <a href="cart.dc.html" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#333338;">
+      <a href="cart.dc.html" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#333338;white-space:nowrap;">
         <span>장바구니</span>
         <span style="min-width:22px;height:22px;padding:0 6px;background:#1c1c1e;color:#fff;border-radius:999px;font-size:12px;display:flex;align-items:center;justify-content:center;">{{ cart }}</span>
       </a>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMnav }}" aria-label="메뉴" style="margin-left:16px;width:40px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;flex:none;">
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+        </button>
+      </sc-if>
     </nav>
+    <sc-if value="{{ mnav }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top:1px solid #ececef;background:#fff;padding:10px 20px 20px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#9a9aa0;margin:14px 4px 8px;">카테고리</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+          <sc-for list="{{ menuCats }}" as="c" hint-placeholder-count="8">
+            <a href="{{ c.href }}" style="display:block;padding:11px 12px;border-radius:9px;font-size:15px;font-weight:600;color:#33353a;">{{ c.name }}</a>
+          </sc-for>
+        </div>
+        <div style="height:1px;background:#f0f1f4;margin:14px 4px;"></div>
+        <div style="display:flex;flex-direction:column;">
+          <a href="category.dc.html?cat=all" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">전체 제품</a>
+          <a href="reviews.dc.html" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">후기</a>
+          <a href="support.dc.html?page=contact" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">문의</a>
+          <a href="login.dc.html" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">로그인 / 회원가입</a>
+        </div>
+      </div>
+    </sc-if>
   </header>
 
   <sc-if value="{{ found }}" hint-placeholder-val="{{ true }}">
@@ -66,7 +92,7 @@
     </section>
 
     <!-- DETAIL -->
-    <section style="max-width:1180px;margin:0 auto;padding:24px 28px 60px;display:grid;grid-template-columns:1fr 1fr;gap:48px;">
+    <section style="max-width:1180px;margin:0 auto;padding:24px 28px 60px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px;">
       <div>
         <div style="position:relative;aspect-ratio:1/1;background:#f2f3f5;border-radius:18px;overflow:hidden;">
           <img src="{{ p.photo }}" alt="{{ p.name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
@@ -112,6 +138,35 @@
         </div>
         <div style="font-size:12.5px;color:#9a9aa0;margin-top:18px;line-height:1.9;">전국 무료배송 · A/S 3년 무상 보장 · 100일 무료 체험</div>
       </div>
+    </section>
+
+    <!-- SPEC (expandable) -->
+    <section style="max-width:1180px;margin:0 auto;padding:8px 28px 40px;">
+      <button onClick="{{ toggleSpec }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#f6f7f9;border:1px solid #e6e8ec;border-radius:12px;padding:16px;font-size:15px;font-weight:700;color:#1c1c1e;cursor:pointer;" style-hover="{{ ghostHover }}">
+        <span>{{ specLabel }}</span>
+        <span style="font-size:11px;color:#8a8d95;">{{ specArrow }}</span>
+      </button>
+      <sc-if value="{{ specOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;border:1px solid #eceef1;border-radius:14px;overflow:hidden;">
+          <div style="background:#1c1c1e;color:#fff;padding:14px 20px;font-size:15px;font-weight:700;">상세 스펙</div>
+          <sc-for list="{{ specRows }}" as="row" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:180px 1fr;gap:16px;padding:14px 20px;border-top:1px solid #f2f3f5;font-size:14.5px;">
+              <div style="color:#8a8d95;font-weight:600;">{{ row.k }}</div>
+              <div style="color:#33353a;">{{ row.v }}</div>
+            </div>
+          </sc-for>
+          <div style="border-top:1px solid #f2f3f5;padding:18px 20px;">
+            <div style="font-size:13px;font-weight:700;color:#8a8d95;margin-bottom:12px;">주요 특징</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex;align-items:flex-start;gap:10px;font-size:14.5px;color:#33353a;">
+                  <span style="color:#3a56c5;font-weight:800;flex:none;">✓</span> {{ f }}
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
     </section>
 
     <!-- REVIEWS PREVIEW -->
@@ -183,7 +238,7 @@
 const CART_KEY = 'moreseat_cart_items';
 
 class Component extends DCLogic {
-  state = { shop: null, cart: this.readCart(), toast: '', toastKey: 0, id: this.readId(), qty: 1, catMenu: false };
+  state = { shop: null, cart: this.readCart(), toast: '', toastKey: 0, id: this.readId(), qty: 1, catMenu: false, isMobile: (typeof window !== 'undefined' && window.innerWidth <= 860), mnav: false, specOpen: false };
 
   linkHover = { color: '#3a56c5' };
   menuItemHover = { background: '#f4f6fb', color: '#3a56c5' };
@@ -221,10 +276,44 @@ class Component extends DCLogic {
   componentDidMount() {
     import('./shop-data.js').then(m => { this.setState({ shop: (m && (m.SHOP || m.default)) || window.SHOP }); })
       .catch(() => { if (window.SHOP) this.setState({ shop: window.SHOP }); });
+    this._onResize = () => { const m = window.innerWidth <= 860; if (m !== this.state.isMobile) this.setState({ isMobile: m, mnav: false }); };
+    window.addEventListener('resize', this._onResize);
   }
+  componentWillUnmount() { window.removeEventListener('resize', this._onResize); }
 
   won(n) { return (Number(n) || 0).toLocaleString('ko-KR'); }
   stars(r) { return '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r); }
+
+  buildSpecs(prod, catName) {
+    const type = prod.catSlug.indexOf('chair') >= 0 ? 'chair' : (prod.catSlug === 'accessory' ? 'acc' : 'desk');
+    const rows = [
+      { k: '브랜드', v: 'MORESEAT' },
+      { k: '카테고리', v: catName },
+      { k: '모델명', v: prod.name },
+    ];
+    if (type === 'desk') {
+      rows.push({ k: '상판 소재', v: '고밀도 MDF · 스크래치 방지 코팅' });
+      rows.push({ k: '프레임', v: '분체도장 강화 스틸 프레임' });
+      rows.push({ k: '최대 하중', v: prod.catSlug === 'standing-desk' ? '80~120kg' : '80kg' });
+      rows.push({ k: '색상', v: '블랙 / 카본 (선택)' });
+    } else if (type === 'chair') {
+      rows.push({ k: '커버 소재', v: '통기성 PU 레더 · 메쉬' });
+      rows.push({ k: '팔걸이', v: '높이·각도 조절형' });
+      rows.push({ k: '가스실린더', v: 'KGS 인증 4등급 실린더' });
+      rows.push({ k: '최대 하중', v: '130~150kg' });
+      rows.push({ k: '색상', v: '블랙 / 레드 / 화이트 (선택)' });
+    } else {
+      rows.push({ k: '소재', v: '알루미늄 합금 · ABS' });
+      rows.push({ k: '호환 규격', v: 'VESA 75×75 / 100×100' });
+      rows.push({ k: '설치 방식', v: '클램프 · 그로밋 겸용' });
+    }
+    rows.push({ k: '구성품', v: prod.name + ' 본체, 조립 부속, 설명서' });
+    rows.push({ k: '배송', v: '전국 무료배송 (제주·도서 별도)' });
+    rows.push({ k: 'A/S', v: '3년 무상 보증 · 100일 무료 체험' });
+    rows.push({ k: '교환/반품', v: '수령 후 7일 이내 (단순변심 왕복배송비 부담)' });
+    rows.push({ k: '제조사', v: '대한매니지먼트(주)' });
+    return rows;
+  }
 
   renderVals() {
     const shop = this.state.shop;
@@ -237,6 +326,8 @@ class Component extends DCLogic {
       menuCats: (shop ? shop.categories.map(c => ({ name: c.name, count: shop.products.filter(p => p.catSlug === c.slug).length, href: 'category.dc.html?cat=' + c.slug })) : []),
       openMenu: () => this.setState({ catMenu: true }),
       closeMenu: () => this.setState({ catMenu: false }),
+      isMobile: this.state.isMobile, desktopNav: !this.state.isMobile, mnav: this.state.mnav,
+      toggleMnav: () => this.setState(s => ({ mnav: !s.mnav })),
     };
     if (!shop) return { ...base, found: true, notFound: false, p: {}, related: [], prodReviews: [], hasReviews: false, noReviews: false };
 
@@ -263,6 +354,11 @@ class Component extends DCLogic {
       dec: () => this.setState(s => ({ qty: Math.max(1, s.qty - 1) })),
       addQty: () => this.addToCart(prod.id, prod.name, this.state.qty),
       buyNow: () => this.buyNow(prod.id, prod.name, this.state.qty),
+      specRows: this.buildSpecs(prod, catName[prod.catSlug] || ''),
+      specOpen: this.state.specOpen,
+      toggleSpec: () => this.setState(s => ({ specOpen: !s.specOpen })),
+      specLabel: this.state.specOpen ? '제품 상세보기 접기' : '제품 상세보기 펼치기',
+      specArrow: this.state.specOpen ? '▲' : '▼',
     };
   }
 }

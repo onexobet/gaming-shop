@@ -6,11 +6,15 @@ const D = [
   '1636489953081-c4ebbd50fa3a', '1636488363495-a06805603784', '1610366398516-46da9dec5931',
   '1601467075935-7e5c5c607074', '1708481480603-b47ea65c80b6', '1614624532983-4ce03382d63d',
   '1495954222046-2c427ecb546d', '1603481588273-2f908a9a7a1b', '1594501252356-79ebbbb10dd9',
+  '1518455027359-f3f8164ba6bd', '1611486212557-88be5ff6f941', '1593062096033-9a26b09da705',
+  '1519710164239-da123dc03ef4', '1497215728101-856f4ea42174', '1533090161767-e6ffed986c88',
 ];
 const C = [
   '1633545486613-feaf749f7805', '1628358011851-c85d8fa59557', '1676862450129-c2fc0a6ffd37',
   '1670946839270-cc4febd43b09', '1598550487031-0898b4852123', '1598550511769-875ef2a01663',
-  '1612011213721-3936d387f318', '1580480095047-4aa43ab3bd1d', '1598550473359-433795503a0f',
+  '1612011213721-3936d387f318', '1580480095047-4aa43ab3bd1d', '1596162954151-cdcb4c0f70a8',
+  '1592078615290-033ee584e267', '1580480055273-228ff5388ef8', '1505843490538-5133c6c7d0e1',
+  '1519947486511-46149fa0a254', '1517705008128-361805f42e86', '1598300042247-d088f8ab3a91',
 ];
 
 const CATEGORIES = [
@@ -21,7 +25,7 @@ const CATEGORIES = [
   { slug: 'gaming-chair',   name: '게이밍 체어',     sub: '장시간에도 편안하게',     photo: P(C[1], 800) },
   { slug: 'ergonomic-chair',name: '인체공학 체어',   sub: '바른 자세를 지켜주는',    photo: P(C[7], 800) },
   { slug: 'mesh-chair',     name: '메쉬 체어',       sub: '사계절 통기성 데일리',    photo: P(C[6], 800) },
-  { slug: 'accessory',      name: '모니터암·액세서리', sub: '셋업을 완성하는 디테일', photo: P(D[8], 800) },
+  { slug: 'accessory',      name: '데스크 주변기기',   sub: '셋업을 완성하는 주변기기', photo: P('1616763355548-1b606f439f86', 800) },
 ];
 
 const PRODUCTS = [
@@ -169,18 +173,18 @@ const PRODUCTS = [
     features: ['3D 입체 메쉬', '통풍 극대화 설계', '높이 조절'] },
 
   // ── 모니터암·액세서리 (4)
-  { id: 44, catSlug: 'accessory', name: 'FLEX 싱글 모니터암', price: 59000, stock: 80, rating: 4.7, reviews: 96, featured: false, badge: '',
-    desc: '책상 공간을 넓혀주는 가스 스프링 싱글 모니터암.', photo: P(D[8]),
-    features: ['가스 스프링 방식', '최대 32인치 지원', 'VESA 75/100 호환'] },
-  { id: 45, catSlug: 'accessory', name: 'FLEX 듀얼 모니터암', price: 99000, stock: 47, rating: 4.8, reviews: 62, featured: true, badge: '',
-    desc: '듀얼 모니터를 자유롭게 배치하는 가스 스프링 암.', photo: P(D[2]),
-    features: ['듀얼 가스 스프링', '360° 회전', '케이블 정리 클립'] },
-  { id: 46, catSlug: 'accessory', name: '케이블 매니지먼트 트레이', price: 29000, stock: 120, rating: 4.6, reviews: 33, featured: false, badge: '',
-    desc: '지저분한 전선을 깔끔하게 정리하는 언더데스크 트레이.', photo: P(D[9]),
-    features: ['언더데스크 장착', '멀티탭 수납', '나사·클램프 겸용'] },
-  { id: 47, catSlug: 'accessory', name: '대형 데스크 매트', price: 39000, stock: 95, rating: 4.7, reviews: 51, featured: false, badge: '',
-    desc: '책상 전체를 덮는 방수 대형 데스크 매트.', photo: P(D[10]),
-    features: ['900×400mm 대형', '방수·방오 표면', '미끄럼 방지 바닥'] },
+  { id: 44, catSlug: 'accessory', name: '모니터 스탠드 라이저', price: 59000, stock: 80, rating: 4.7, reviews: 96, featured: false, badge: '',
+    desc: '모니터를 눈높이로 올려주는 원목 상판 모니터 스탠드.', photo: P('1616763355548-1b606f439f86'),
+    features: ['원목 상판','하부 수납 공간','미끄럼 방지 패드'] },
+  { id: 45, catSlug: 'accessory', name: '27형 QHD 모니터', price: 99000, stock: 47, rating: 4.8, reviews: 62, featured: true, badge: '',
+    desc: '선명한 QHD 해상도의 27인치 사무·작업용 모니터.', photo: P('1527443154391-507e9dc6c5cc'),
+    features: ['QHD 2560×1440','75Hz IPS 패널','플리커 프리'] },
+  { id: 46, catSlug: 'accessory', name: '무선 오버이어 헤드셋', price: 29000, stock: 120, rating: 4.6, reviews: 33, featured: false, badge: '',
+    desc: '노이즈 캔슬링을 지원하는 무선 오버이어 헤드셋.', photo: P('1550009158-9ebf69173e03'),
+    features: ['액티브 노이즈 캔슬링','최대 30시간 재생','저지연 게이밍 모드'] },
+  { id: 47, catSlug: 'accessory', name: 'RGB 게이밍 라이트바', price: 39000, stock: 95, rating: 4.7, reviews: 51, featured: false, badge: '',
+    desc: '책상 뒤를 밝히는 RGB 앰비언트 라이트바.', photo: P('1593305841991-05c297ba4575'),
+    features: ['1600만 컬러','앱 제어','USB 전원'] },
 
   // ── 프리미엄 · 미니멀 라인
   { id: 48, catSlug: 'gaming-desk', name: 'MONO 게이밍 데스크 1600', price: 329000, stock: 17, rating: 4.8, reviews: 0, featured: true, badge: 'NEW',
@@ -225,12 +229,12 @@ const PRODUCTS = [
   { id: 61, catSlug: 'mesh-chair', name: 'PURE 메쉬 체어', price: 229000, stock: 24, rating: 4.7, reviews: 0, featured: false, badge: '',
     desc: '심플함의 정석, 데일리 프리미엄 메쉬 체어.', photo: P(C[8]),
     features: ['3D 입체 메쉬', '틸트 조절', '미니멀 디자인'] },
-  { id: 62, catSlug: 'accessory', name: 'ALU 알루미늄 모니터암', price: 119000, stock: 40, rating: 4.8, reviews: 0, featured: true, badge: '',
-    desc: '알루미늄 소재의 프리미엄 싱글 모니터암.', photo: P(D[8]),
-    features: ['풀알루미늄 바디', '가스 스프링', '최대 34인치'] },
-  { id: 63, catSlug: 'accessory', name: 'LEATHER 데스크 매트', price: 59000, stock: 60, rating: 4.8, reviews: 0, featured: false, badge: '',
-    desc: '천연 질감의 프리미엄 레더 데스크 매트.', photo: P(D[10]),
-    features: ['프리미엄 PU 레더', '양면 사용', '방수 표면'] },
+  { id: 62, catSlug: 'accessory', name: '무선 멤브레인 키보드', price: 119000, stock: 40, rating: 4.8, reviews: 0, featured: true, badge: '',
+    desc: '조용한 타건감의 무선 멤브레인 키보드.', photo: P('1587829741301-dc798b83add3'),
+    features: ['저소음 멤브레인','2.4G 무선','풀사이즈 배열'] },
+  { id: 63, catSlug: 'accessory', name: '슬림 무선 키보드', price: 59000, stock: 60, rating: 4.8, reviews: 0, featured: false, badge: '',
+    desc: '얇고 가벼운 미니멀 슬림 무선 키보드.', photo: P('1541140532154-b024d705b90a'),
+    features: ['초슬림 디자인','팬터그래프 키','멀티페어링'] },
 
   // ── 추가 컬렉션
   { id: 64, catSlug: 'gaming-desk', name: 'AXIS 게이밍 데스크', price: 210000, stock: 32, rating: 4.7, reviews: 0, featured: false, badge: '',
@@ -311,12 +315,6 @@ const PRODUCTS = [
   { id: 89, catSlug: 'gaming-chair', name: 'OASIS 게이밍 체어', price: 278000, stock: 17, rating: 4.7, reviews: 0, featured: false, badge: '',
     desc: '절제된 디자인의 게이밍 체어.', photo: P(C[1]),
     features: ['리클라이닝','2D/4D 팔걸이','메모리폼 시트'] },
-  { id: 90, catSlug: 'gaming-chair', name: 'PRISM 게이밍 체어', price: 300000, stock: 18, rating: 4.7, reviews: 0, featured: true, badge: '',
-    desc: '절제된 디자인의 게이밍 체어.', photo: P(C[2]),
-    features: ['리클라이닝','2D/4D 팔걸이','메모리폼 시트'] },
-  { id: 91, catSlug: 'gaming-chair', name: 'QUARTZ 게이밍 체어', price: 322000, stock: 19, rating: 4.7, reviews: 0, featured: false, badge: '',
-    desc: '절제된 디자인의 게이밍 체어.', photo: P(C[4]),
-    features: ['리클라이닝','2D/4D 팔걸이','메모리폼 시트'] },
   { id: 92, catSlug: 'ergonomic-chair', name: 'RIDGE 인체공학 체어', price: 280000, stock: 20, rating: 4.7, reviews: 0, featured: false, badge: '',
     desc: '바른 자세를 잡아주는 인체공학 체어.', photo: P(C[3]),
     features: ['조절식 요추 지지','헤드레스트','틸트 조절'] },
@@ -350,32 +348,48 @@ const PRODUCTS = [
   { id: 102, catSlug: 'mesh-chair', name: 'DUNE 메쉬 체어', price: 222000, stock: 30, rating: 4.7, reviews: 0, featured: false, badge: '',
     desc: '사계절 통기성 좋은 메쉬 체어.', photo: P(C[7]),
     features: ['풀메쉬 등판','경량 프레임','미니멀 디자인'] },
-  { id: 103, catSlug: 'accessory', name: 'ELM 싱글 모니터암', price: 39000, stock: 31, rating: 4.7, reviews: 0, featured: false, badge: '',
-    desc: '셋업을 완성하는 프리미엄 액세서리.', photo: P(D[8]),
-    features: ['견고한 마감','간편 설치','호환성 우수'] },
-  { id: 104, catSlug: 'accessory', name: 'FERN 듀얼 모니터암', price: 53000, stock: 32, rating: 4.7, reviews: 0, featured: false, badge: '',
-    desc: '셋업을 완성하는 프리미엄 액세서리.', photo: P(D[2]),
-    features: ['견고한 마감','간편 설치','호환성 우수'] },
-  { id: 105, catSlug: 'accessory', name: 'GROVE 모니터 스탠드', price: 67000, stock: 33, rating: 4.7, reviews: 0, featured: false, badge: '',
-    desc: '셋업을 완성하는 프리미엄 액세서리.', photo: P(D[9]),
-    features: ['견고한 마감','간편 설치','호환성 우수'] },
-  { id: 106, catSlug: 'accessory', name: 'SLATE 언더데스크 서랍', price: 81000, stock: 34, rating: 4.7, reviews: 0, featured: false, badge: '',
-    desc: '셋업을 완성하는 프리미엄 액세서리.', photo: P(D[10]),
-    features: ['견고한 마감','간편 설치','호환성 우수'] },
-  { id: 107, catSlug: 'accessory', name: 'ONWARD 케이블 트레이', price: 95000, stock: 35, rating: 4.7, reviews: 0, featured: false, badge: '',
-    desc: '셋업을 완성하는 프리미엄 액세서리.', photo: P(D[8]),
-    features: ['견고한 마감','간편 설치','호환성 우수'] },
-  { id: 108, catSlug: 'accessory', name: 'PIVOT 데스크 매트', price: 109000, stock: 36, rating: 4.7, reviews: 0, featured: true, badge: '',
-    desc: '셋업을 완성하는 프리미엄 액세서리.', photo: P(D[2]),
-    features: ['견고한 마감','간편 설치','호환성 우수'] },
+  { id: 103, catSlug: 'accessory', name: '게이밍 마우스', price: 39000, stock: 31, rating: 4.7, reviews: 0, featured: false, badge: '',
+    desc: '정밀 센서를 탑재한 유선 게이밍 마우스.', photo: P('1563297007-0686b7003af7'),
+    features: ['최대 16000 DPI','인체공학 그립','매크로 버튼'] },
+  { id: 104, catSlug: 'accessory', name: '미니멀 데스크 오거나이저', price: 53000, stock: 32, rating: 4.7, reviews: 0, featured: false, badge: '',
+    desc: '데스크를 깔끔하게 정리하는 미니멀 오거나이저.', photo: P('1526657782461-9fe13402a841'),
+    features: ['모듈형 구성','친환경 소재','논슬립 바닥'] },
+  { id: 105, catSlug: 'accessory', name: '곡면 게이밍 모니터', price: 67000, stock: 33, rating: 4.7, reviews: 0, featured: false, badge: '',
+    desc: '몰입감을 높이는 곡면 게이밍 모니터.', photo: P('1591370874773-6702e8f12fd8'),
+    features: ['1500R 곡률','165Hz 주사율','1ms 응답속도'] },
+  { id: 106, catSlug: 'accessory', name: '블루투스 스피커', price: 81000, stock: 34, rating: 4.7, reviews: 0, featured: false, badge: '',
+    desc: '풍부한 사운드의 휴대용 블루투스 스피커.', photo: P('1544244015-0df4b3ffc6b0'),
+    features: ['방수 IPX7','최대 12시간 재생','베이스 부스트'] },
+  { id: 107, catSlug: 'accessory', name: '무선 키보드·마우스 세트', price: 95000, stock: 35, rating: 4.7, reviews: 0, featured: false, badge: '',
+    desc: '데스크를 완성하는 무선 키보드·마우스 콤보.', photo: P('1629429407759-01cd3d7cfb38'),
+    features: ['키보드+마우스 세트','통합 USB 리시버','마우스패드 포함'] },
+  { id: 108, catSlug: 'accessory', name: '게이밍 기계식 키보드', price: 109000, stock: 36, rating: 4.7, reviews: 0, featured: true, badge: '',
+    desc: '경쾌한 타건감의 RGB 게이밍 기계식 키보드.', photo: P('1595044426077-d36d9236d54a'),
+    features: ['적축 스위치','RGB 백라이트','N키 롤오버'] },
 ];
 
 // ── 사진 분산 + 가격대 다양화 (자동 정규화)
 (function(){
-  const POOL = { desk: D, chair: C };
-  const typeImg = (slug) => slug.indexOf('chair') >= 0 ? 'chair' : 'desk';
-  const ctr = { desk: 0, chair: 0 };
-  PRODUCTS.forEach(p => { const t = typeImg(p.catSlug); const pool = POOL[t]; p.photo = P(pool[ctr[t] % pool.length]); ctr[t]++; });
+  // 액세서리 전용 이미지 풀 (모니터+스탠드 / 데스크 소품)
+  const A = [
+    '1616763355548-1b606f439f86', '1526657782461-9fe13402a841', '1527443154391-507e9dc6c5cc',
+    '1593305841991-05c297ba4575', '1550009158-9ebf69173e03', '1587829741301-dc798b83add3',
+    '1541140532154-b024d705b90a', '1527864550417-7fd91fc51a46',
+  ];
+  const POOL = { desk: D, chair: C, accessory: A };
+  const typeImg = (slug) => slug.indexOf('chair') >= 0 ? 'chair' : (slug === 'accessory' ? 'accessory' : 'desk');
+  // 카테고리별 시작 오프셋 — 카테고리 안에서 이미지가 겹치지 않게 (풀 크기 > 카테고리 상품 수)
+  const OFF = { 'gaming-desk': 0, 'standing-desk': 5, 'corner-desk': 10, 'compact-desk': 14,
+                'gaming-chair': 0, 'ergonomic-chair': 6, 'mesh-chair': 12 };
+  const catCtr = {};
+  PRODUCTS.forEach(p => {
+    if (p.catSlug === 'accessory') return;
+    const t = typeImg(p.catSlug); const pool = POOL[t];
+    catCtr[p.catSlug] = (catCtr[p.catSlug] || 0);
+    const idx = ((OFF[p.catSlug] || 0) + catCtr[p.catSlug]) % pool.length;
+    p.photo = P(pool[idx]);
+    catCtr[p.catSlug]++;
+  });
   const RANGE = {
     'gaming-desk': [190000, 540000], 'standing-desk': [330000, 890000], 'corner-desk': [240000, 690000],
     'compact-desk': [89000, 330000], 'gaming-chair': [150000, 640000], 'ergonomic-chair': [240000, 980000],
@@ -394,72 +408,68 @@ const PRODUCTS = [
   });
 })();
 
-const R_FIRST = ['김민준','이서연','박도현','최지우','정하윤','강태양','윤서아','임재현','한소율','오은채','서지훈','배유진','신동욱','조아라','홍지민','문세영','양준혁','구예린','남기훈','도지원','한지후','유서준','고나윤','장태호','권민서'];
-const R_ROLE = {
-  chair: ['게이머','재택근무','대학생','직장인','스트리머','디자이너','개발자','프리랜서','수험생','웹툰작가'],
-  desk: ['게이머','재택근무','대학생','직장인','스트리머','영상편집','개발자','트레이더','건축학도','1인가구'],
-  accessory: ['재택근무','게이머','직장인','디자이너','유튜버','대학생'],
-};
-const R_CHAIR = [
-  '하루 종일 앉아 있어도 허리가 편해요. 요추 지지가 확실해서 자세가 저절로 잡힙니다.',
-  '조립이 생각보다 간단했고, 앉는 순간 쿠션감이 좋아서 만족스러워요.',
-  '장시간 게임하거나 일할 때 목과 어깨 부담이 확실히 줄었습니다.',
-  '통풍이 잘 돼서 오래 앉아도 덥지 않아요. 여름에 특히 좋네요.',
-  '팔걸이 높이랑 각도 조절이 자유로워서 책상 높이에 딱 맞췄어요.',
-  '가격 대비 마감이 훌륭합니다. 흔들림 없이 튼튼하고 디자인도 깔끔해요.',
-  '리클라이닝 각도가 넉넉해서 잠깐 눕듯이 쉬기에도 좋아요.',
-  '체형이 큰 편인데 좌판이 넓어서 편하게 앉습니다. 강력 추천해요.',
-  '재택근무 시작하고 산 것 중 제일 만족도가 높은 제품이에요.',
-  '바퀴가 부드럽게 굴러가고 소음도 없어서 바닥 걱정 없이 씁니다.',
-  '허리 통증 때문에 고민하다 샀는데 확실히 앉는 자세가 편해졌어요.',
-  '색감이 사진이랑 똑같고 방 분위기랑 잘 어울립니다. 배송도 빨랐어요.',
+const R_FIRST = ['김민준','이서연','박도현','최지우','정하윤','강태양','윤서아','임재현','한소율','오은채','서지훈','배유진','신동욱','조아라','홍지민','문세영','양준혁','구예린','남기훈','도지원','한지후','유서준','고나윤','장태호','권민서','노하람','천유빈','류시우','명채원','봉준서','설다인','안태현','엄지호','옥주하','편성민','표한결','황보람','계지안','국서율','반예준','전예나','민찬우','석하은','추민재','방시연','조민','김하니','이레','박솔','정우'];
+
+// 짧고 캐주얼한 반응 (마침표/느낌표/무구두점 섞음)
+const SHORT = [
+  '감사합니다 잘 쓸게요!!','생각보다 훨씬 좋아요','만족만족~','대만족입니다!','재구매 각이에요','완전 이득 봤어요','굿굿','이건 두 번 삽니다','친구한테도 추천했어요!','기대 이상!!','돈 안 아까워요','진짜 편해요 ㅎㅎ','별 다섯 개도 모자라요','후회 없는 선택!','배송 빨라서 놀랐어요','포장 진짜 꼼꼼하더라구요','실물 보고 반했어요','가격 대비 최고예요!','튼튼하고 예뻐요','이거 사길 잘했다','생각보다 고급스러워요','무난하게 잘 샀어요','완전 강추합니다!!','자취 필수템 인정','볼 때마다 기분 좋아요','만족스럽습니다','잘 쓰고 있어요~','추천추천','품질 좋네요','또 살 것 같아요',
 ];
-const R_DESK = [
-  '상판이 넓어서 듀얼 모니터를 올려도 여유롭습니다. 작업 공간이 확 늘었어요.',
-  '조립 설명서가 친절해서 혼자서도 금방 완성했어요. 튼튼합니다.',
-  '높이 조절이 부드럽고 소음이 거의 없어서 만족스럽습니다.',
-  '방 사이즈에 딱 맞아서 공간 활용이 좋아요. 마감도 깔끔합니다.',
-  '상판 질감이 고급스럽고 팔을 올려도 편안해요. 잘 산 것 같아요.',
-  '프레임이 견고해서 무거운 장비를 올려도 전혀 흔들리지 않습니다.',
-  '케이블 정리가 편하게 되어 있어서 책상 위가 깔끔해졌어요.',
-  '가성비 최고예요. 이 가격에 이 퀄리티면 정말 만족합니다.',
-  '서서 일하니 오후에도 집중력이 오래가요. 자세도 한결 나아졌습니다.',
-  '배송이 빠르고 포장도 꼼꼼했어요. 스크래치 없이 잘 받았습니다.',
-  '디자인이 심플해서 어떤 인테리어에도 잘 어울려요. 재구매 의사 있어요.',
-  '넓고 튼튼해서 작업용으로 완벽합니다. 다리 공간도 넉넉해요.',
+// 아쉬운 반응 (평점 3~4)
+const NEG = [
+  '배송이 좀 늦었어요ㅠ','조립이 살짝 빡셌어요','설명서가 좀 부실합니다','색이 사진보다 어두워요','나사 하나가 빠져 있었어요','생각보다 무거워요','새 제품 냄새가 며칠 나요','받았을 때 스크래치 있어서 아쉬웠어요','가격은 좀 나가는 편','기대만큼은 아니었어요','높이 조절이 살짝 뻑뻑해요','조금 흔들리는 느낌','포장이 찌그러져 왔어요','A/S 문의가 늦게 왔네요','사이즈가 생각보다 크네요',
 ];
-const R_ACC = [
-  '설치가 어렵지 않았고, 책상 공간이 훨씬 넓어졌어요.',
-  '흔들림 없이 단단하게 고정됩니다. 각도 조절도 편해요.',
-  '지저분하던 전선이 깔끔하게 정리돼서 아주 만족합니다.',
-  '가성비 좋은 제품이에요. 필요한 기능은 다 갖췄습니다.',
-  '마감이 깔끔하고 튼튼해서 오래 쓸 것 같아요.',
-  '책상 위가 정돈되니 집중이 훨씬 잘 됩니다. 추천해요.',
-  '설명서대로 하니 금방 설치 끝났어요. 편리합니다.',
-  '생각보다 퀄리티가 좋아서 놀랐어요. 잘 샀습니다.',
+// 의자 반응
+const CHAIR = [
+  '허리가 진짜 편해졌어요','종일 앉아 있어도 안 아파요!','자세 교정되는 느낌이에요','쿠션 푹신해서 좋아요','통풍 잘 돼서 여름에 딱','목받침이 신의 한 수네요','팔걸이 조절되는 거 완전 편함','리클라이닝 각도 최고예요!','오래 앉아도 다리 안 저려요','앉자마자 아 이거다 싶었어요','등받이가 딱 받쳐줘서 좋아요','바퀴 조용하고 부드러워요',
 ];
+// 책상 반응
+const DESK = [
+  '상판 넓어서 너무 좋아요','듀얼 모니터 올려도 여유로워요','높이 조절 진짜 편함!','서서 일하니까 안 졸려요 ㅋㅋ','케이블 정리되니까 깔끔해요','흔들림 하나 없어요','조립 혼자서도 금방 했어요','다리 공간 넉넉해서 편해요','무광이라 지문 안 남아서 좋음','방에 딱 맞아요','작업 공간 확 넓어졌어요','마감이 깔끔합니다',
+];
+// 액세서리 반응
+const ACC = [
+  '설치 5분컷이에요','전선 정리 끝판왕','책상 넓어졌어요!','각도 조절 부드러워요','생각보다 단단해요','가성비 갑','고정 확실하게 됩니다','있으니까 훨씬 편해요',
+];
+// 뒤에 붙는 한마디 (가끔)
+const TAIL = ['','',' 강추','!',' 만족해요',' ㅎㅎ',' 굿','',' 추천해요',''];
 function _rseed(n){ return function(){ n = (n * 1664525 + 1013904223) % 4294967296; return n / 4294967296; }; }
 function _pad(n){ return n < 10 ? '0' + n : '' + n; }
 function _typeOf(slug){ return slug.indexOf('chair') >= 0 ? 'chair' : (slug === 'accessory' ? 'accessory' : 'desk'); }
 const REVIEWS = [];
+const _usedText = {};
 let _rid = 1;
 PRODUCTS.forEach((p, pi) => {
   const type = _typeOf(p.catSlug);
-  const pool = type === 'chair' ? R_CHAIR : (type === 'accessory' ? R_ACC : R_DESK);
-  const roles = R_ROLE[type];
+  const detail = type === 'chair' ? CHAIR : (type === 'accessory' ? ACC : DESK);
   const rand = _rseed(p.id * 7919 + 17);
-  const count = 3 + Math.floor(rand() * 5);
+  const count = 3 + Math.floor(rand() * 6);
   let sum = 0;
   for (let k = 0; k < count; k++) {
-    const r = rand();
-    const rating = r < 0.12 ? 3 : (r < 0.4 ? 4 : 5);
+    const mode = rand();
+    let text, rating, guard = 0;
+    do {
+      if (mode < 0.30) {                    // 짧은 반응
+        text = SHORT[Math.floor(rand()*SHORT.length)];
+        rating = rand() < 0.8 ? 5 : 4;
+      } else if (mode < 0.46) {             // 아쉬운
+        const neg = NEG[Math.floor(rand()*NEG.length)];
+        text = rand() < 0.5 ? neg : (neg + ' 그래도 제품은 괜찮아요');
+        rating = rand() < 0.55 ? 3 : 4;
+      } else if (mode < 0.74) {             // 제품 반응 한 줄 (+가끔 꼬리)
+        text = detail[Math.floor(rand()*detail.length)] + TAIL[Math.floor(rand()*TAIL.length)];
+        rating = rand() < 0.85 ? 5 : 4;
+      } else {                              // 제품 반응 + 짧은 반응
+        text = detail[Math.floor(rand()*detail.length)] + '. ' + SHORT[Math.floor(rand()*SHORT.length)];
+        rating = 5;
+      }
+      guard++;
+    } while (_usedText[text] && guard < 40);
+    _usedText[text] = true;
     sum += rating;
-    const name = R_FIRST[(p.id * 3 + k) % R_FIRST.length];
-    const role = roles[(p.id + k) % roles.length];
-    const text = pool[(p.id * 2 + k * 5) % pool.length];
-    const d = new Date(2026, 6, 6); d.setDate(d.getDate() - (pi * 2 + k));
-    const date = d.getFullYear() + '-' + _pad(d.getMonth() + 1) + '-' + _pad(d.getDate());
-    REVIEWS.push({ id: _rid++, productId: p.id, product: p.name, name: name, initial: name.charAt(0), rating: rating, date: date, role: role, text: text });
+    const name = R_FIRST[(p.id * 5 + k * 11) % R_FIRST.length];
+    const dd = new Date(2026, 6, 6); dd.setDate(dd.getDate() - (pi * 2 + k) - Math.floor(rand() * 4));
+    const date = dd.getFullYear() + '-' + _pad(dd.getMonth() + 1) + '-' + _pad(dd.getDate());
+    REVIEWS.push({ id: _rid++, productId: p.id, product: p.name, name: name, initial: name.charAt(0), rating: rating, date: date, role: '', text: text });
   }
   p.reviews = count;
   p.rating = Math.round((sum / count) * 10) / 10;

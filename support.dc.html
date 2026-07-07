@@ -27,13 +27,34 @@
   <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
     <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
       <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <sc-if value="{{ desktopNav }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
         <a href="index.html#category" style-hover="{{ linkHover }}">카테고리</a>
         <a href="index.html#products" style-hover="{{ linkHover }}">인기제품</a>
         <a href="reviews.dc.html" style-hover="{{ linkHover }}">후기</a>
         <a href="support.dc.html?page=faq" style="color:#3a56c5;">고객지원</a>
       </div>
+      </sc-if>
+      <div style="flex:1;"></div>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMnav }}" aria-label="메뉴" style="width:40px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;">
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+        </button>
+      </sc-if>
     </nav>
+    <sc-if value="{{ mnav }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top:1px solid #ececef;background:#fff;padding:10px 20px 20px;">
+        <div style="display:flex;flex-direction:column;">
+          <a href="category.dc.html?cat=all" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">전체 제품</a>
+          <a href="reviews.dc.html" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">후기</a>
+          <a href="support.dc.html?page=faq" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">고객지원</a>
+          <a href="support.dc.html?page=contact" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">1:1 문의</a>
+          <a href="login.dc.html" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">로그인 / 회원가입</a>
+        </div>
+      </div>
+    </sc-if>
   </header>
 
   <!-- HEADER -->
@@ -47,7 +68,7 @@
     </div>
   </section>
 
-  <div style="max-width:1080px;margin:0 auto;padding:34px 28px 80px;display:grid;grid-template-columns:210px 1fr;gap:40px;">
+  <div style="max-width:1080px;margin:0 auto;padding:34px 28px 80px;display:grid;grid-template-columns:{{ mainCols }};gap:40px;">
 
     <!-- SIDE TABS -->
     <aside>
@@ -188,7 +209,14 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = { page: this.readPage(), openFaq: 0, as: { name: '', phone: '', issue: '' }, asDone: false, asError: '',
-            contact: { name: '', email: '', subject: '', message: '' }, cDone: false, cError: '' };
+            contact: { name: '', email: '', subject: '', message: '' }, cDone: false, cError: '',
+            isMobile: (typeof window !== 'undefined' && window.innerWidth <= 860), mnav: false };
+
+  componentDidMount() {
+    this._onResize = () => { const m = window.innerWidth <= 860; if (m !== this.state.isMobile) this.setState({ isMobile: m, mnav: false }); };
+    window.addEventListener('resize', this._onResize);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._onResize); }
 
   linkHover = { color: '#3a56c5' };
 
@@ -254,6 +282,9 @@ class Component extends DCLogic {
 
     return {
       linkHover: this.linkHover, tabs, title, subtitle,
+      isMobile: this.state.isMobile, desktopNav: !this.state.isMobile, mnav: this.state.mnav,
+      toggleMnav: () => this.setState(s => ({ mnav: !s.mnav })),
+      mainCols: this.state.isMobile ? '1fr' : '210px 1fr',
       isCompany: page === 'company', isPrivacy: page === 'privacy', isTerms: page === 'terms',
       isAs: page === 'as', isFaq: page === 'faq', isContact: page === 'contact',
       contact: this.state.contact, cError: this.state.cError, cDone: this.state.cDone, cForm: !this.state.cDone,

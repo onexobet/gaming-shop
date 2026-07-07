@@ -26,6 +26,7 @@
   <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #ececef;">
     <nav style="max-width:1280px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;">
       <a href="index.html" style="font-weight:800;font-size:25px;letter-spacing:.14em;color:#1c1c1e;">MORESEAT</a>
+      <sc-if value="{{ desktopNav }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;align-items:center;gap:34px;font-size:16px;font-weight:600;color:#333338;margin-left:14px;">
         <div style="position:relative;" onMouseEnter="{{ openMenu }}" onMouseLeave="{{ closeMenu }}">
           <a href="index.html#category" style-hover="{{ linkHover }}">카테고리 ▾</a>
@@ -46,12 +47,37 @@
         <a href="reviews.dc.html" style-hover="{{ linkHover }}">후기</a>
         <a href="support.dc.html?page=contact" style-hover="{{ linkHover }}">문의</a>
       </div>
+      </sc-if>
       <div style="flex:1;"></div>
-      <a href="cart.dc.html" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#333338;">
+      <a href="cart.dc.html" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#333338;white-space:nowrap;">
         <span>장바구니</span>
         <span style="min-width:22px;height:22px;padding:0 6px;background:#1c1c1e;color:#fff;border-radius:999px;font-size:12px;display:flex;align-items:center;justify-content:center;">{{ cart }}</span>
       </a>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMnav }}" aria-label="메뉴" style="margin-left:16px;width:40px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;flex:none;">
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+          <span style="width:22px;height:2px;background:#1c1c1e;border-radius:2px;"></span>
+        </button>
+      </sc-if>
     </nav>
+    <sc-if value="{{ mnav }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top:1px solid #ececef;background:#fff;padding:10px 20px 20px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#9a9aa0;margin:14px 4px 8px;">카테고리</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+          <sc-for list="{{ menuCats }}" as="c" hint-placeholder-count="8">
+            <a href="{{ c.href }}" style="display:block;padding:11px 12px;border-radius:9px;font-size:15px;font-weight:600;color:#33353a;">{{ c.name }}</a>
+          </sc-for>
+        </div>
+        <div style="height:1px;background:#f0f1f4;margin:14px 4px;"></div>
+        <div style="display:flex;flex-direction:column;">
+          <a href="category.dc.html?cat=all" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">전체 제품</a>
+          <a href="reviews.dc.html" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">후기</a>
+          <a href="support.dc.html?page=contact" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">문의</a>
+          <a href="login.dc.html" style="padding:13px 4px;font-size:16px;font-weight:600;color:#1c1c1e;">로그인 / 회원가입</a>
+        </div>
+      </div>
+    </sc-if>
   </header>
 
   <!-- BREADCRUMB + TITLE -->
@@ -118,7 +144,7 @@
 const CART_KEY = 'moreseat_cart_items';
 
 class Component extends DCLogic {
-  state = { shop: null, cart: this.readCart(), toast: '', toastKey: 0, cat: this.readCat(), catMenu: false };
+  state = { shop: null, cart: this.readCart(), toast: '', toastKey: 0, cat: this.readCat(), catMenu: false, isMobile: (typeof window !== 'undefined' && window.innerWidth <= 860), mnav: false };
 
   linkHover = { color: '#3a56c5' };
   menuItemHover = { background: '#f4f6fb', color: '#3a56c5' };
@@ -146,7 +172,10 @@ class Component extends DCLogic {
   componentDidMount() {
     import('./shop-data.js').then(m => { this.setState({ shop: (m && (m.SHOP || m.default)) || window.SHOP }); })
       .catch(() => { if (window.SHOP) this.setState({ shop: window.SHOP }); });
+    this._onResize = () => { const m = window.innerWidth <= 860; if (m !== this.state.isMobile) this.setState({ isMobile: m, mnav: false }); };
+    window.addEventListener('resize', this._onResize);
   }
+  componentWillUnmount() { window.removeEventListener('resize', this._onResize); }
 
   won(n) { return (Number(n) || 0).toLocaleString('ko-KR'); }
 
@@ -189,6 +218,8 @@ class Component extends DCLogic {
       menuCats: shop.categories.map(c => ({ name: c.name, count: shop.products.filter(p => p.catSlug === c.slug).length, href: 'category.dc.html?cat=' + c.slug })),
       openMenu: () => this.setState({ catMenu: true }),
       closeMenu: () => this.setState({ catMenu: false }),
+      isMobile: this.state.isMobile, desktopNav: !this.state.isMobile, mnav: this.state.mnav,
+      toggleMnav: () => this.setState(s => ({ mnav: !s.mnav })),
     };
   }
 }
