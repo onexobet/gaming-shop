@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23ffffff'/><text x='32' y='46' font-family='Arial,Helvetica,sans-serif' font-size='42' font-weight='800' fill='%231c1c1e' text-anchor='middle'>M</text></svg>"><rect width='64' height='64' rx='14' fill='%231c1c1e'/><text x='32' y='46' font-family='Arial,Helvetica,sans-serif' font-size='42' font-weight='700' fill='%23ffffff' text-anchor='middle'>M</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2064%2064'%3E%3Crect%20width%3D'64'%20height%3D'64'%20rx%3D'14'%20fill%3D'%23ffffff'%2F%3E%3Ctext%20x%3D'32'%20y%3D'46'%20font-family%3D'Arial%2CHelvetica%2Csans-serif'%20font-size%3D'42'%20font-weight%3D'800'%20fill%3D'%231c1c1e'%20text-anchor%3D'middle'%3EM%3C%2Ftext%3E%3C%2Fsvg%3E">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -111,7 +111,10 @@
         <div style="font-size:13.5px;color:#f4a51c;margin-top:12px;">★ {{ p.rating }} <span style="color:#9a9aa0;">· 후기 {{ p.reviews }}개</span></div>
         <p style="font-size:15px;line-height:1.75;color:#55555c;margin-top:18px;">{{ p.desc }}</p>
 
-        <div style="font-weight:800;font-size:32px;letter-spacing:-.02em;margin:24px 0;">₩{{ p.priceFmt }}</div>
+        <div style="display:flex;align-items:baseline;gap:12px;margin:24px 0;">
+          <span style="font-weight:800;font-size:32px;letter-spacing:-.02em;color:#e0322f;">₩{{ p.priceFmt }}</span>
+          <sc-if value="{{ p.hasDiscount }}" hint-placeholder-val="{{ true }}"><span style="font-size:19px;color:#adb1ba;text-decoration:line-through;">₩{{ p.listPriceFmt }}</span></sc-if>
+        </div>
 
         <div style="border-top:1px solid #eceef1;border-bottom:1px solid #eceef1;padding:20px 0;display:flex;flex-direction:column;gap:12px;">
           <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="3">
@@ -208,7 +211,10 @@
               </div>
               <div style="padding:14px 16px 18px;">
                 <div style="font-weight:700;font-size:15px;">{{ rp.name }}</div>
-                <div style="font-weight:800;font-size:16px;margin-top:6px;">₩{{ rp.priceFmt }}</div>
+                <div style="display:flex;align-items:baseline;gap:7px;margin-top:6px;">
+                  <span style="font-weight:800;font-size:16px;color:#e0322f;">₩{{ rp.priceFmt }}</span>
+                  <sc-if value="{{ rp.hasDiscount }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;color:#adb1ba;text-decoration:line-through;">₩{{ rp.listPriceFmt }}</span></sc-if>
+                </div>
               </div>
             </a>
           </sc-for>
@@ -342,10 +348,10 @@ class Component extends DCLogic {
     if (!prod) return { ...base, found: false, notFound: true, p: {}, related: [], prodReviews: [], hasReviews: false, noReviews: false };
 
     const p = {
-      ...prod, priceFmt: this.won(prod.price), catName: catName[prod.catSlug] || '', hasBadge: !!prod.badge,
+      ...prod, priceFmt: this.won(prod.price), listPriceFmt: this.won(prod.listPrice), hasDiscount: prod.listPrice > prod.price, catName: catName[prod.catSlug] || '', hasBadge: !!prod.badge,
     };
     const related = shop.products.filter(x => x.catSlug === prod.catSlug && x.id !== prod.id).slice(0, 4)
-      .map(x => ({ ...x, priceFmt: this.won(x.price), href: 'product.dc.html?id=' + x.id }));
+      .map(x => ({ ...x, priceFmt: this.won(x.price), listPriceFmt: this.won(x.listPrice), hasDiscount: x.listPrice > x.price, href: 'product.dc.html?id=' + x.id }));
     const allProdReviews = shop.reviews.filter(r => r.productId === prod.id);
     const prodReviews = allProdReviews.slice(0, 1)
       .map(r => ({ ...r, stars: this.stars(r.rating) }));

@@ -406,6 +406,14 @@ const PRODUCTS = [
       p.price = v;
     });
   });
+  // ── 정가(listPrice)=오른쪽 표기, 판매가(price)=왼쪽 할인가·1원 단위(끝자리 0 제거)
+  PRODUCTS.forEach(p => {
+    p.listPrice = p.price;
+    const rate = 0.05 + ((p.id * 37) % 130) / 1000;   // 5.0% ~ 17.9% 할인
+    let sale = Math.round(p.listPrice * (1 - rate));
+    if (sale % 10 === 0) sale -= (1 + (p.id % 9));      // 1원 단위 0 제거
+    p.price = sale;
+  });
 })();
 
 const R_FIRST = ['김민준','이서연','박도현','최지우','정하윤','강태양','윤서아','임재현','한소율','오은채','서지훈','배유진','신동욱','조아라','홍지민','문세영','양준혁','구예린','남기훈','도지원','한지후','유서준','고나윤','장태호','권민서','노하람','천유빈','류시우','명채원','봉준서','설다인','안태현','엄지호','옥주하','편성민','표한결','황보람','계지안','국서율','반예준','전예나','민찬우','석하은','추민재','방시연','조민','김하니','이레','박솔','정우'];
@@ -503,7 +511,7 @@ PRODUCTS.forEach((p, pi) => {
     _usedText[text] = true;
     sum += rating;
     const name = R_FIRST[(p.id * 5 + k * 11) % R_FIRST.length];
-    const dd = new Date(2026, 6, 7); const back = Math.max(0, Math.floor((pi + k) * 0.8) - 1 + Math.floor(rand() * 3)); dd.setDate(dd.getDate() - back);
+    const dd = new Date(2026, 6, 16); const back = Math.max(0, Math.floor((pi + k) * 0.8) - 1 + Math.floor(rand() * 3)); dd.setDate(dd.getDate() - back);
     const date = dd.getFullYear() + '-' + _pad(dd.getMonth() + 1) + '-' + _pad(dd.getDate());
     REVIEWS.push({ id: _rid++, productId: p.id, product: p.name, name: name, initial: name.charAt(0), rating: rating, date: date, role: '', text: text });
   }
